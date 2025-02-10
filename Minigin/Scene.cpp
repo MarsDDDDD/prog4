@@ -13,32 +13,31 @@ Scene::~Scene() = default;
 
 void Scene::Add(std::shared_ptr<GameObject> object)
 {
-	m_objects.emplace_back(std::move(object));
+    m_objects.emplace_back(std::move(object));
 }
 
 void Scene::Remove(std::shared_ptr<GameObject> object)
 {
-	m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
+    m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
 }
 
 void Scene::RemoveAll()
 {
-	m_objects.clear();
+    m_objects.clear();
 }
 
-void Scene::Update()
+void Scene::Update(float deltaTime) // Modified to take deltaTime
 {
-	for(auto& object : m_objects)
-	{
-		object->Update();
-	}
+    for (auto& object : m_objects)
+    {
+        object->Update(deltaTime); // Pass deltaTime to GameObject Update
+    }
 }
 
 void Scene::Render() const
 {
-	for (const auto& object : m_objects)
-	{
-		object->Render();
-	}
+    for (const auto& object : m_objects)
+    {
+        object->Render();
+    }
 }
-
