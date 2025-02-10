@@ -10,6 +10,10 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+
+
+#include <chrono> // Include chrono for time measurement
+
 SDL_Window* g_window{};
 
 void PrintSDLVersion()
@@ -83,12 +87,17 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 
-	// todo: this update loop could use some work.
+	auto lastTime = std::chrono::high_resolution_clock::now(); // Get start time
+
 	bool doContinue = true;
 	while (doContinue)
 	{
+		const auto currentTime = std::chrono::high_resolution_clock::now();
+		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count(); // Calculate deltaTime
+		lastTime = currentTime;
+
 		doContinue = input.ProcessInput();
-		sceneManager.Update();
+		sceneManager.Update(deltaTime); // Pass deltaTime to SceneManager Update
 		renderer.Render();
 	}
 }
