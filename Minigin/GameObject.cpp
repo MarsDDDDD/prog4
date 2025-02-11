@@ -5,7 +5,10 @@
 
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update(){}
+void dae::GameObject::Update(float /*deltaTime*/) // Modified Update method implementation
+{
+	// Base class Update does nothing for now, but can be overridden in derived classes.
+}
 
 void dae::GameObject::Render() const
 {

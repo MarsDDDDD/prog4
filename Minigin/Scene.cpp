@@ -26,13 +26,22 @@ void Scene::RemoveAll()
 	m_objects.clear();
 }
 
-void Scene::Update()
+void Scene::Update(float deltaTime) // Modified Update method implementation
 {
-	for(auto& object : m_objects)
+	for (auto& object : m_objects)
 	{
-		object->Update();
+		object->Update(deltaTime); // Pass deltaTime to GameObject::Update
 	}
 }
+
+void Scene::FixedUpdate(float fixedTimeStep) // New FixedUpdate method implementation
+{
+	for (auto& object : m_objects)
+	{
+		object->FixedUpdate(fixedTimeStep); // Pass fixedTimeStep to GameObject::FixedUpdate (to be created)
+	}
+}
+
 
 void Scene::Render() const
 {
@@ -41,4 +50,3 @@ void Scene::Render() const
 		object->Render();
 	}
 }
-

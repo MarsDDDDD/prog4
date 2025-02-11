@@ -1,11 +1,19 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-void dae::SceneManager::Update()
+void dae::SceneManager::Update(float deltaTime) // Modified Update method implementation
 {
-	for(auto& scene : m_scenes)
+	for (auto& scene : m_scenes)
 	{
-		scene->Update();
+		scene->Update(deltaTime); // Pass deltaTime to Scene::Update
+	}
+}
+
+void dae::SceneManager::FixedUpdate(float fixedTimeStep) // New FixedUpdate method implementation
+{
+	for (auto& scene : m_scenes)
+	{
+		scene->FixedUpdate(fixedTimeStep); // Pass fixedTimeStep to Scene::FixedUpdate
 	}
 }
 

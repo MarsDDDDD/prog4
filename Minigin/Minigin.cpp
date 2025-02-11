@@ -10,6 +10,9 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+#include <chrono>
+#include <thread>
+
 SDL_Window* g_window{};
 
 void PrintSDLVersion()
@@ -75,6 +78,7 @@ dae::Minigin::~Minigin()
 	SDL_Quit();
 }
 
+
 void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
@@ -83,12 +87,39 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 
-	// todo: this update loop could use some work.
 	bool doContinue = true;
+
+    //Fixed Time Step
+	const float fixedTimeStep{ 0.02f }; // Example: 50 FPS for physics.  Should be a setting.
+	float lag = 0.0f;
+    auto lastTime = std::chrono::high_resolution_clock::now();
+
 	while (doContinue)
 	{
+        // Calculate delta time.
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count(); // deltaTime in seconds.
+        lastTime = currentTime;
+
+        lag += deltaTime;
+
+
 		doContinue = input.ProcessInput();
-		sceneManager.Update();
+
+        // Fixed update loop (for physics and other things that need consistent updates).
+        while (lag >= fixedTimeStep)
+        {
+            sceneManager.FixedUpdate(fixedTimeStep); //Pass fixed timestep to a new method
+            lag -= fixedTimeStep;
+        }
+
+		sceneManager.Update(deltaTime); // Pass delta time to update.
 		renderer.Render();
+
+        //Optional: limit frame rate
+        const auto sleep_time = currentTime + std::chrono::milliseconds(16) - std::chrono::high_resolution_clock::now(); //Try to maintain around 60 fps render, Should be a setting
+        if (sleep_time.count() > 0)
+            std::this_thread::sleep_for(sleep_time);
+
 	}
 }
