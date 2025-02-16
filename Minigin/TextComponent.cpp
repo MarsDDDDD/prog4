@@ -17,15 +17,15 @@ void dae::TextComponent::Update(float /*deltaTime*/)  // deltaTime is unused, bu
 	}
 }
 
+
 void dae::TextComponent::Render() const
 {
 	if (m_textTexture)
 	{
-		const auto& pos = m_gameObject->GetTransform().GetPosition(); // Use the GameObject's transform
-		Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
+		const auto& pos = m_gameObject->GetTransform()->GetPosition(); // Correctly uses the TransformComponent
+		dae::Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
 	}
 }
-
 void dae::TextComponent::SetText(const std::string& text)
 {
 	m_text = text;

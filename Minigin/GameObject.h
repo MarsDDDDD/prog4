@@ -5,9 +5,9 @@
 #include <typeinfo> // Required for typeid
 #include <typeindex> // Required for type_index
 #include <map>
-#include "Transform.h"
+//#include "Transform.h"  // No longer needed directly in GameObject
 #include "BaseComponent.h"
-
+#include "TransformComponent.h"
 namespace dae
 {
 	class BaseComponent; // Forward declaration
@@ -41,16 +41,19 @@ namespace dae
 		template <typename T>
 		void RemoveComponent();
 
-		const Transform& GetTransform() const { return m_transform; } // Add a getter for the Transform
-		Transform& GetTransform() { return m_transform; } // And a non-const version
+		//const Transform& GetTransform() const { return m_transform; } // Add a getter for the Transform
+		//Transform& GetTransform() { return m_transform; } // And a non-const version
+		TransformComponent* GetTransform() { return GetComponent<TransformComponent>().get(); }
+		const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>().get(); }
+
 
 	private:
-		Transform m_transform;
+		//Transform m_transform;
 		std::vector<std::shared_ptr<BaseComponent>> m_components; // Store base class pointers
 		std::map<std::type_index, std::shared_ptr<BaseComponent>> m_componentMap;
 	};
 
-	// Put the template function definitions *in the header file*.
+	// Put the template function definitions in the header file.
 	template <typename T>
 	void GameObject::AddComponent(std::shared_ptr<T> component)
 	{
@@ -73,7 +76,7 @@ namespace dae
 			// Cast to the requested type using std::dynamic_pointer_cast.  Safer than static_cast.
 			return std::dynamic_pointer_cast<T>(it->second);
 		}
-		return nullptr; // Or consider throwing an exception if it *should* exist.
+		return nullptr; // Or consider throwing an exception if it should exist.
 	}
 
 	template <typename T>

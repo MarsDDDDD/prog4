@@ -13,11 +13,12 @@ dae::TextureComponent::TextureComponent(std::shared_ptr<Texture2D> texture)
 	}
 }
 
+
 void dae::TextureComponent::Render() const
 {
 	if (m_texture)
 	{
-		const auto& pos = m_gameObject->GetTransform().GetPosition();
+		const auto& pos = m_gameObject->GetTransform()->GetPosition(); // Correctly uses the TransformComponent
 		if (m_dimensions.x != 0 && m_dimensions.y != 0)
 		{
 			dae::Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y, m_dimensions.x, m_dimensions.y);
@@ -28,7 +29,6 @@ void dae::TextureComponent::Render() const
 		}
 	}
 }
-
 void dae::TextureComponent::SetTexture(std::shared_ptr<Texture2D> texture)
 {
 	m_texture = std::move(texture);
