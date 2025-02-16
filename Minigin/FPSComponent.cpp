@@ -1,6 +1,10 @@
 // ===== FPSComponent.cpp =====
 #include "FPSComponent.h"
+#include "TextComponent.h"
+#include "GameObject.h"
 
+#include <iomanip> // Required for std::setprecision and std::fixed
+#include <sstream> // Required for std::stringstream
 dae::FPSComponent::FPSComponent() :
     m_fps(0.0f),
     m_timeAccumulator(0.0f),
@@ -32,7 +36,15 @@ void dae::FPSComponent::Update(float deltaTime)
         }
         m_fps = (m_frameTimes.size() > 0) ? (1.0f / (totalTime / static_cast<float>(m_frameTimes.size()))) : 0.0f;
 
-        m_timeAccumulator -= 0.5f; // reset the accumulator, but don't zero it.
+        //Update the text component
+
+        auto textComponent = m_gameObject->GetComponent<TextComponent>();
+        if (textComponent)
+        {
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(1) << m_fps; // Format to 1 decimal place
+            textComponent->SetText(stream.str() + " FPS");
+        }        m_timeAccumulator -= 0.5f; // reset the accumulator, but don't zero it.
         m_frameCount = 0;          //Reset frame count for the next measurement interval
     }
 }

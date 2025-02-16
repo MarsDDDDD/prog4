@@ -3,6 +3,7 @@
 
 namespace dae
 {
+	class FPSComponent;
 	class GameObject;
 	class Scene final
 	{
