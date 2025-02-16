@@ -1,79 +1,105 @@
+
 #pragma once
 #include <memory>
 #include <vector>
-#include "Transform.h"
-#include "Component.h"
-
+#include <typeinfo> // Required for typeid
+#include <typeindex> // Required for type_index
+#include <map>
+//#include "Transform.h"  // No longer needed directly in GameObject
+#include "BaseComponent.h"
+#include "TransformComponent.h"
 namespace dae
 {
-    class Texture2D;
+	class BaseComponent; // Forward declaration
 
-    class GameObject final // Marked as final as per instruction
-    {
-    public:
-        template <typename T>
-        std::shared_ptr<T> AddComponent()
-        {
-            if (HasComponent<T>())
-            {
-                return GetComponent<T>(); // Or perhaps throw an exception, depending on desired behavior
-            }
-            std::shared_ptr<T> component = std::make_shared<T>();
-            component->SetGameObject(this);
-            m_components.push_back(component);
-            return component;
-        }
+	class GameObject final
+	{
+	public:
+		void Update(float deltaTime);
+		void FixedUpdate(float fixedTimeStep);
+		void Render() const;
 
-        template <typename T>
-        std::shared_ptr<T> GetComponent() const
-        {
-            for (const auto& comp : m_components)
-            {
-                if (std::shared_ptr<T> derivedComp = std::dynamic_pointer_cast<T>(comp))
-                {
-                    return derivedComp;
-                }
-            }
-            return nullptr;
-        }
+		void SetPosition(float x, float y);
 
-        template <typename T>
-        bool HasComponent() const
-        {
-            return GetComponent<T>() != nullptr;
-        }
+		GameObject() = default;
+		~GameObject();
+		GameObject(const GameObject& other) = delete;
+		GameObject(GameObject&& other) = delete;
+		GameObject& operator=(const GameObject& other) = delete;
+		GameObject& operator=(GameObject&& other) = delete;
 
-        template <typename T>
-        void RemoveComponent()
-        {
-            for (auto it = m_components.begin(); it != m_components.end(); ++it)
-            {
-                if (std::dynamic_pointer_cast<T>(*it))
-                {
-                    m_components.erase(it);
-                    return; // Assuming only one component of each type is desired, or remove break for all
-                }
-            }
-        }
+		// Component Management
+		template <typename T>
+		void AddComponent(std::shared_ptr<T> component);
+
+		template <typename T>
+		std::shared_ptr<T> GetComponent() const;
+
+		template <typename T>
+		bool HasComponent() const;
+
+		template <typename T>
+		void RemoveComponent();
+
+		//const Transform& GetTransform() const { return m_transform; } // Add a getter for the Transform
+		//Transform& GetTransform() { return m_transform; } // And a non-const version
+		TransformComponent* GetTransform() { return GetComponent<TransformComponent>().get(); }
+		const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>().get(); }
 
 
-        void Update(float deltaTime); // Modified to take deltaTime
-        void Render() const;
+	private:
+		//Transform m_transform;
+		std::vector<std::shared_ptr<BaseComponent>> m_components; // Store base class pointers
+		std::map<std::type_index, std::shared_ptr<BaseComponent>> m_componentMap;
+	};
 
-        void SetTexture(const std::string& filename);
-        void SetPosition(float x, float y);
-        Transform& GetTransform() { return m_transform; } // Added getter for Transform
+	// Put the template function definitions in the header file.
+	template <typename T>
+	void GameObject::AddComponent(std::shared_ptr<T> component)
+	{
+		// Check if a component of this type already exists
+		if (HasComponent<T>())
+		{
+			return; // Or throw an exception, depending on desired behavior
+		}
 
-        GameObject() = default;
-        ~GameObject() = default; // Modified to default
-        GameObject(const GameObject& other) = delete;
-        GameObject(GameObject&& other) = delete;
-        GameObject& operator=(const GameObject& other) = delete;
-        GameObject& operator=(GameObject&& other) = delete;
+		m_components.push_back(component);
+		m_componentMap[typeid(T)] = component;
+		component->SetGameObject(this); // Important: Set the GameObject pointer
+	}
 
-    private:
-        Transform m_transform{};
-        std::shared_ptr<Texture2D> m_texture{};
-        std::vector<std::shared_ptr<Component>> m_components; // Vector to hold components
-    };
+	template <typename T>
+	std::shared_ptr<T> GameObject::GetComponent() const
+	{
+		auto it = m_componentMap.find(typeid(T));
+		if (it != m_componentMap.end()) {
+			// Cast to the requested type using std::dynamic_pointer_cast.  Safer than static_cast.
+			return std::dynamic_pointer_cast<T>(it->second);
+		}
+		return nullptr; // Or consider throwing an exception if it should exist.
+	}
+
+	template <typename T>
+	bool GameObject::HasComponent() const
+	{
+		return m_componentMap.count(typeid(T)) > 0;
+	}
+
+	template <typename T>
+	void GameObject::RemoveComponent()
+	{
+		auto typeIndex = typeid(T);
+		if (m_componentMap.count(typeIndex) > 0)
+		{
+			auto component = m_componentMap[typeIndex];
+			// Remove from the vector
+			auto it = std::find(m_components.begin(), m_components.end(), component);
+			if (it != m_components.end())
+			{
+				m_components.erase(it);
+			}
+
+			m_componentMap.erase(typeIndex);
+		}
+	}
 }

@@ -1,34 +1,44 @@
 #include <string>
 #include "GameObject.h"
-#include "ResourceManager.h"
-#include "Renderer.h"
-#include "Component.h"
+#include "BaseComponent.h"
+#include <algorithm>
+#include "TransformComponent.h"
 
-namespace dae {
+dae::GameObject::~GameObject() = default;
 
-    void GameObject::Update(float deltaTime) // Modified to take deltaTime
+void dae::GameObject::Update(float deltaTime)
+{
+    for (const auto& component : m_components)
     {
-        for (const auto& component : m_components)
-        {
-            component->Update(deltaTime);
-        }
+        component->Update(deltaTime);
     }
+}
 
-    void GameObject::Render() const
+void dae::GameObject::FixedUpdate(float fixedTimeStep)
+{
+    for (const auto& component : m_components)
     {
-        const auto& pos = m_transform.GetPosition();
-        if (m_texture) // Check if texture is loaded before rendering
-            Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+        component->FixedUpdate(fixedTimeStep);
     }
+}
 
-    void GameObject::SetTexture(const std::string& filename)
+
+void dae::GameObject::Render() const
+{
+    for (const auto& component : m_components)
     {
-        m_texture = ResourceManager::GetInstance().LoadTexture(filename);
+        component->Render();
     }
+}
 
-    void GameObject::SetPosition(float x, float y)
+void dae::GameObject::SetPosition(float x, float y)
+{
+    // Get the TransformComponent.  If it doesn't exist, add it.
+    auto transform = GetComponent<TransformComponent>();
+    if (!transform)
     {
-        m_transform.SetPosition(x, y, 0.0f);
+        transform = std::make_shared<TransformComponent>();
+        AddComponent(transform);
     }
-
+    transform->SetPosition(x, y, 0.0f); // Use the component's method.
 }

@@ -1,50 +1,55 @@
+// ===== FPSComponent.cpp =====
 #include "FPSComponent.h"
-#include "Font.h"
-#include "GameObject.h"
 #include "TextComponent.h"
-#include <iomanip> // For std::setprecision
-#include <sstream>  // For std::stringstream
+#include "GameObject.h"
 
+#include <iomanip> // Required for std::setprecision and std::fixed
+#include <sstream> // Required for std::stringstream
+dae::FPSComponent::FPSComponent() :
+    m_fps(0.0f),
+    m_timeAccumulator(0.0f),
+    m_frameCount(0)
+{
+    m_frameTimes.reserve(m_maxSamples); // Reserve space to avoid reallocations
+}
 
-namespace dae {
+void dae::FPSComponent::Update(float deltaTime)
+{
+    m_timeAccumulator += deltaTime;
+    m_frameCount++;
 
-    FPSComponent::FPSComponent(std::shared_ptr<Font> font)
-        : m_deltaTimeSum(0.0f)
-        , m_frameCount(0)
-        , m_fps(0.0f)
-        , m_textComponent(std::make_shared<TextComponent>("FPS: 0", font)) // Initialize TextComponent
-        , m_lastTime(std::chrono::high_resolution_clock::now())
+    // Add the new frame time to the buffer
+    m_frameTimes.push_back(deltaTime);
+
+    // If we have more samples than the maximum, remove the oldest one
+    if (m_frameTimes.size() > m_maxSamples)
     {
-        // Add TextComponent to the same GameObject as FPSComponent
-        if (GetGameObject())
-        {
-            GetGameObject()->AddComponent<TextComponent>(m_textComponent); // Add the pre-created TextComponent instance
-        }
+        m_frameTimes.erase(m_frameTimes.begin()); // Remove from front (FIFO)
     }
 
-
-    void FPSComponent::Update(float deltaTime)
+    if (m_timeAccumulator >= 0.5f) // Recalculate a few times per second.  Not every frame.
     {
-        m_deltaTimeSum += deltaTime;
-        m_frameCount++;
-
-        if (m_deltaTimeSum >= 1.0f)
+        float totalTime = 0.0f;
+        for (float frameTime : m_frameTimes)
         {
-            m_fps = static_cast<float>(m_frameCount) / m_deltaTimeSum;
-            m_deltaTimeSum = 0.0f;
-            m_frameCount = 0;
+            totalTime += frameTime;
+        }
+        m_fps = (m_frameTimes.size() > 0) ? (1.0f / (totalTime / static_cast<float>(m_frameTimes.size()))) : 0.0f;
 
+        //Update the text component
+
+        auto textComponent = m_gameObject->GetComponent<TextComponent>();
+        if (textComponent)
+        {
             std::stringstream stream;
-            stream << std::fixed << std::setprecision(2) << "FPS: " << m_fps;
-            m_textComponent->SetText(stream.str());
-        }
-        m_textComponent->Update(deltaTime); // Update the TextComponent as well.
+            stream << std::fixed << std::setprecision(1) << m_fps; // Format to 1 decimal place
+            textComponent->SetText(stream.str() + " FPS");
+        }        m_timeAccumulator -= 0.5f; // reset the accumulator, but don't zero it.
+        m_frameCount = 0;          //Reset frame count for the next measurement interval
     }
+}
 
-    void FPSComponent::Render() const
-    {
-        // TextComponent will handle rendering
-        // m_textComponent->Render(); // Optionally call render here, or rely on GameObject's render loop to render all components.
-    }
-
+float dae::FPSComponent::GetFPS() const
+{
+    return m_fps;
 }

@@ -1,32 +1,33 @@
 #pragma once
+#include "BaseComponent.h"
 #include <string>
 #include <memory>
-#include "Component.h"
 #include "Font.h"
+#include "Texture2D.h"
+#include <SDL_ttf.h> // Include for SDL_Color
 
-namespace dae {
-    class TextObject;
+namespace dae
+{
+	class TextComponent : public BaseComponent
+	{
+	public:
+		TextComponent(const std::string& text, std::shared_ptr<Font> font, SDL_Color color = { 255, 255, 255, 255 });
+		~TextComponent() override = default;
 
-    class TextComponent final : public Component
-    {
-    public:
-        TextComponent(const std::string& text, std::shared_ptr<Font> font);
-        ~TextComponent() override = default;
+		void Update(float deltaTime) override;
+		void Render() const override;
 
-        void Update(float deltaTime) override;
-        void Render() const; // Add render method for direct rendering if needed
+		void SetText(const std::string& text);
+		void SetColor(SDL_Color color);
+		void SetFont(std::shared_ptr<Font> font);
 
-        void SetText(const std::string& text);
-        void SetPosition(float x, float y);
+	private:
+		bool m_needsUpdate;
+		std::string m_text;
+		std::shared_ptr<Font> m_font;
+		std::shared_ptr<Texture2D> m_textTexture;
+		SDL_Color m_color;
 
-        glm::vec3 GetPosition() const;
-        void SetFont(std::shared_ptr<Font> font);
-
-    private:
-        bool m_needsUpdate;
-        std::string m_text;
-        glm::vec3 m_position;
-        std::shared_ptr<Font> m_font;
-        std::shared_ptr<Texture2D> m_textTexture;
-    };
+		void CreateTexture(); // Helper function
+	};
 }

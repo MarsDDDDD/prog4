@@ -1,26 +1,25 @@
 #pragma once
-#include <string>
-#include <memory>
-#include <chrono>
-#include "Component.h"
-#include "TextComponent.h"
+#include "BaseComponent.h"
+#include <vector>
 
-namespace dae {
+namespace dae
+{
+	class FPSComponent : public BaseComponent
+	{
+	public:
+		FPSComponent();
+		~FPSComponent() override = default;
 
-    class FPSComponent final : public Component
-    {
-    public:
-        FPSComponent(std::shared_ptr<Font> font);
-        ~FPSComponent() override = default;
+		void Update(float deltaTime) override;
 
-        void Update(float deltaTime) override;
-        void Render() const; // Optional, TextComponent can render itself
+		float GetFPS() const;
 
-    private:
-        float m_deltaTimeSum;
-        int m_frameCount;
-        float m_fps;
-        std::shared_ptr<TextComponent> m_textComponent;
-        std::chrono::high_resolution_clock::time_point m_lastTime;
-    };
+	private:
+		float m_fps;
+		float m_timeAccumulator;
+		int m_frameCount;
+		std::vector<float> m_frameTimes; // To store the times of the last 'x' frames
+		static constexpr size_t m_maxSamples = 100;  //Store 100 samples, average those
+
+	};
 }
