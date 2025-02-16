@@ -66,6 +66,9 @@ set(MINIGIN_HEADERS
 # Create executable
 add_executable(Minigin ${MINIGIN_SOURCES} ${MINIGIN_HEADERS})
 
+
+# Use target_compile_features for C++20.
+target_compile_features(Minigin PRIVATE cxx_std_20)
 # Set warning level 4 and treat warnings as errors
 target_compile_options(Minigin PRIVATE /W4 /WX)
 
