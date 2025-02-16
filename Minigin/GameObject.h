@@ -6,8 +6,8 @@ namespace dae
 {
 	class Texture2D;
 
-	// todo: this should become final.
-	class GameObject final
+	// todo: this should become final, after the textobject is changed into textcomponent
+	class GameObject //final
 	{
 	public:
 		virtual void Update(float deltaTime); // Modified Update method
