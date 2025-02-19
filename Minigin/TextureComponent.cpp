@@ -2,8 +2,9 @@
 #include "Renderer.h"
 #include "GameObject.h" // For GetTransform
 
-dae::TextureComponent::TextureComponent(std::shared_ptr<Texture2D> texture)
-	: m_texture(std::move(texture))
+dae::TextureComponent::TextureComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture) // Add GameObject*
+	: BaseComponent(pOwner), // Call base class constructor
+	m_texture(std::move(texture))
 {
 	if (m_texture)
 	{

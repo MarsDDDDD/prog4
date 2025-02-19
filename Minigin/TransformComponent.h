@@ -3,11 +3,12 @@
 #include <glm.hpp>
 namespace dae
 {
+    class GameObject;
     class TransformComponent : public BaseComponent
     {
     public:
-        TransformComponent() = default;
-        TransformComponent(const glm::vec3& position) : m_position(position) {}
+        TransformComponent(GameObject* pOwner);
+        TransformComponent(GameObject* pOwner, const glm::vec3& position);
         ~TransformComponent() override = default;
 
         // Getters and Setters

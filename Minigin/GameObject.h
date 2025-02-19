@@ -67,7 +67,8 @@ namespace dae
 
 		m_components.push_back(component);
 		m_componentMap[typeid(T)] = component;
-		component->SetGameObject(this); // Important: Set the GameObject pointer
+		//component->SetGameObject(this); // Important: Set the GameObject pointer // REMOVE
+		//Call base class constructor
 	}
 
 	template <typename T>

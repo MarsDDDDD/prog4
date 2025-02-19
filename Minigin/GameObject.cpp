@@ -49,7 +49,7 @@ void dae::GameObject::SetPosition(float x, float y)
     auto transform = GetComponent<TransformComponent>();
     if (!transform)
     {
-        transform = std::make_shared<TransformComponent>();
+        transform = std::make_shared<TransformComponent>(this); // Pass 'this' to the constructor
         AddComponent(transform);
     }
     transform->SetPosition(x, y, 0.0f); // Use the component's method.

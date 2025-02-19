@@ -35,7 +35,7 @@ set(MINIGIN_SOURCES
     Minigin/Scene.cpp
     Minigin/SceneManager.cpp
     Minigin/TextComponent.cpp
-    Minigin/TextObject.cpp
+    
     Minigin/Texture2D.cpp
     Minigin/TextureComponent.cpp
     Minigin/Transform.cpp
@@ -56,7 +56,7 @@ set(MINIGIN_HEADERS
     Minigin/SceneManager.h
     Minigin/Singleton.h
     Minigin/TextComponent.h
-    Minigin/TextObject.h
+    
     Minigin/Texture2D.h
     Minigin/TextureComponent.h
     Minigin/Transform.h

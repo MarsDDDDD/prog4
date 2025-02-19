@@ -6,11 +6,12 @@
 namespace dae
 {
 	class TextComponent; // Forward declare TextComponent
+	class GameObject;
 
 	class FPSComponent : public BaseComponent
 	{
 	public:
-		FPSComponent();
+		FPSComponent(GameObject* pOwner); // Add GameObject* to constructor
 		~FPSComponent() override = default;
 
 		void Update(float deltaTime) override;

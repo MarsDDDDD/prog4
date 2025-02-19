@@ -6,7 +6,8 @@
 #include <iomanip> // Required for std::setprecision and std::fixed
 #include <sstream> // Required for std::stringstream
 
-dae::FPSComponent::FPSComponent() :
+dae::FPSComponent::FPSComponent(GameObject* pOwner) : // Constructor definition
+    BaseComponent(pOwner), // Call base class constructor
     m_fps(0.0f),
     m_timeAccumulator(0.0f),
     m_frameCount(0)
