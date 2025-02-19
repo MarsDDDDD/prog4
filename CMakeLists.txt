@@ -23,7 +23,7 @@ endif()
 # Define source files for Minigin
 set(MINIGIN_SOURCES
     Minigin/BaseComponent.cpp
-    Minigin/Component.cpp
+    
     Minigin/Font.cpp
     Minigin/FPSComponent.cpp
     Minigin/GameObject.cpp
@@ -44,7 +44,7 @@ set(MINIGIN_SOURCES
 
 set(MINIGIN_HEADERS
     Minigin/BaseComponent.h
-    Minigin/Component.h
+    
     Minigin/Font.h
     Minigin/FPSComponent.h
     Minigin/GameObject.h

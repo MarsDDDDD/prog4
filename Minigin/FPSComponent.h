@@ -1,9 +1,12 @@
 #pragma once
 #include "BaseComponent.h"
 #include <vector>
+#include <memory> // For weak_ptr
 
 namespace dae
 {
+	class TextComponent; // Forward declare TextComponent
+
 	class FPSComponent : public BaseComponent
 	{
 	public:
@@ -13,8 +16,10 @@ namespace dae
 		void Update(float deltaTime) override;
 
 		float GetFPS() const;
-
 	private:
+		//Use weak_ptr to fix dependency and improve efficiency
+		std::weak_ptr<TextComponent> m_textComponent{};
+
 		float m_fps;
 		float m_timeAccumulator;
 		int m_frameCount;

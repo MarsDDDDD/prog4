@@ -12,6 +12,18 @@ void dae::GameObject::Update(float deltaTime)
     {
         component->Update(deltaTime);
     }
+    for (const auto& component : m_componentsToRemove)
+    {
+        auto it = std::find(m_components.begin(), m_components.end(), component);
+        if (it != m_components.end())
+        {
+            m_components.erase(it);
+        }
+
+        m_componentMap.erase(m_componentTypesToRemove.front());
+        m_componentTypesToRemove.pop();
+    }
+    m_componentsToRemove.clear();
 }
 
 void dae::GameObject::FixedUpdate(float fixedTimeStep)

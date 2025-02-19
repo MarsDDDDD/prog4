@@ -1,10 +1,10 @@
-
 #pragma once
 #include <memory>
 #include <vector>
 #include <typeinfo> // Required for typeid
 #include <typeindex> // Required for type_index
 #include <map>
+#include <queue>
 //#include "Transform.h"  // No longer needed directly in GameObject
 #include "BaseComponent.h"
 #include "TransformComponent.h"
@@ -51,6 +51,8 @@ namespace dae
 		//Transform m_transform;
 		std::vector<std::shared_ptr<BaseComponent>> m_components; // Store base class pointers
 		std::map<std::type_index, std::shared_ptr<BaseComponent>> m_componentMap;
+		std::vector<std::shared_ptr<BaseComponent>> m_componentsToRemove;
+		std::queue<std::type_index> m_componentTypesToRemove;
 	};
 
 	// Put the template function definitions in the header file.
@@ -92,14 +94,8 @@ namespace dae
 		if (m_componentMap.count(typeIndex) > 0)
 		{
 			auto component = m_componentMap[typeIndex];
-			// Remove from the vector
-			auto it = std::find(m_components.begin(), m_components.end(), component);
-			if (it != m_components.end())
-			{
-				m_components.erase(it);
-			}
-
-			m_componentMap.erase(typeIndex);
+			m_componentsToRemove.push_back(component);
+			m_componentTypesToRemove.push(typeIndex);
 		}
 	}
 }
