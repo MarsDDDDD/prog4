@@ -18,7 +18,7 @@ namespace dae
 		void FixedUpdate(float fixedTimeStep);
 		void Render() const;
 
-		void SetPosition(float x, float y);
+		void SetLocalPosition(float x, float y);
 
 		GameObject() = default;
 		~GameObject();

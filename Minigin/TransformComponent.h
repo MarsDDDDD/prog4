@@ -11,20 +11,27 @@ namespace dae
         TransformComponent(GameObject* pOwner, const glm::vec3& position);
         ~TransformComponent() override = default;
 
+        TransformComponent(const TransformComponent&) = delete;
+        TransformComponent(TransformComponent&&) = delete;
+        TransformComponent& operator= (const TransformComponent&) = delete;
+        TransformComponent& operator= (const TransformComponent&&) = delete;
+
         // Getters and Setters
-        const glm::vec3& GetPosition() const { return m_position; }
-        void SetPosition(const glm::vec3& position) { m_position = position; }
-        void SetPosition(float x, float y, float z) { m_position = glm::vec3(x, y, z); }
+        const glm::vec3& GetLocalPosition() const { return m_LocalPosition; }
+        void SetLocalPosition(const glm::vec3& position) { m_LocalPosition = position; }
+        void SetLocalPosition(float x, float y, float z) { m_LocalPosition = glm::vec3(x, y, z); }
 
-        // Placeholder for later:
-        // const glm::quat& GetRotation() const { return m_rotation; }
-        // void SetRotation(const glm::quat& rotation) { m_rotation = rotation; }
-        // const glm::vec3& GetScale() const { return m_scale; }
-        // void SetScale(const glm::vec3& scale) { m_scale = scale; }
 
+        const glm::vec3& GetWorldPosition();
+
+
+		const void SetPositionDirty() { m_IsDirty = true; }
+		bool IsPositionDirty() { return m_IsDirty; }
     private:
-        glm::vec3 m_position{};
-        // glm::quat m_rotation{};  // might add later
-        // glm::vec3 m_scale{1.0f, 1.0f, 1.0f};
+        glm::vec3 m_LocalPosition{};
+        glm::vec3 m_WorldPosition;
+        bool m_IsDirty;
+
+        void UpdateWorldPosition();
     };
 }

@@ -23,7 +23,7 @@ void dae::TextComponent::Render() const
 {
 	if (m_textTexture)
 	{
-		const auto& pos = m_gameObject->GetTransform()->GetPosition(); // Correctly uses the TransformComponent
+		const auto& pos = m_gameObject->GetTransform()->GetLocalPosition(); // Correctly uses the TransformComponent
 		dae::Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
 	}
 }

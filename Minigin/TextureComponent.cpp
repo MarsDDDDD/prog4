@@ -19,7 +19,7 @@ void dae::TextureComponent::Render() const
 {
 	if (m_texture)
 	{
-		const auto& pos = m_gameObject->GetTransform()->GetPosition(); // Correctly uses the TransformComponent
+		const auto& pos = m_gameObject->GetTransform()->GetLocalPosition(); // Correctly uses the TransformComponent
 		if (m_dimensions.x != 0 && m_dimensions.y != 0)
 		{
 			dae::Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y, m_dimensions.x, m_dimensions.y);

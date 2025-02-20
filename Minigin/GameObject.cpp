@@ -61,7 +61,7 @@ void dae::GameObject::Render() const
     }
 }
 
-void dae::GameObject::SetPosition(float x, float y)
+void dae::GameObject::SetLocalPosition(float x, float y)
 {
     // Get the TransformComponent.  If it doesn't exist, add it.
     auto transform = GetComponent<TransformComponent>();
@@ -70,7 +70,7 @@ void dae::GameObject::SetPosition(float x, float y)
         transform = std::make_shared<TransformComponent>(this); // Pass 'this' to the constructor
         AddComponent(transform);
     }
-    transform->SetPosition(x, y, 0.0f); // Use the component's method.
+    transform->SetLocalPosition(x, y, 0.0f); // Use the component's method.
 }
 
 void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
@@ -84,7 +84,7 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
     //Store original position to use later
     glm::vec3 originalWorldPosition{};
     if (keepWorldPosition)
-        originalWorldPosition = GetTransform()->GetPosition();
+        originalWorldPosition = GetTransform()->GetLocalPosition();
 
 
     // 2. Remove from the previous parent (if any)
@@ -111,13 +111,13 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
     if (parent && keepWorldPosition)
     {
         // Get the parent's world position
-        glm::vec3 parentWorldPosition = parent->GetTransform()->GetPosition();
+        glm::vec3 parentWorldPosition = parent->GetTransform()->GetLocalPosition();
 
         // Calculate the new local position
         glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
 
         // Set the new local position
-        GetTransform()->SetPosition(newLocalPosition);
+        GetTransform()->SetLocalPosition(newLocalPosition);
     }
 }
 
