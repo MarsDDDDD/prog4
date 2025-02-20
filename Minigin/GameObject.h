@@ -5,14 +5,13 @@
 #include <typeindex> // Required for type_index
 #include <map>
 #include <queue>
-//#include "Transform.h"  // No longer needed directly in GameObject
 #include "BaseComponent.h"
 #include "TransformComponent.h"
 namespace dae
 {
 	class BaseComponent; // Forward declaration
 
-	class GameObject final
+	class GameObject final : public std::enable_shared_from_this<GameObject> 
 	{
 	public:
 		void Update(float deltaTime);
@@ -41,11 +40,14 @@ namespace dae
 		template <typename T>
 		void RemoveComponent();
 
-		//const Transform& GetTransform() const { return m_transform; } // Add a getter for the Transform
-		//Transform& GetTransform() { return m_transform; } // And a non-const version
 		TransformComponent* GetTransform() { return GetComponent<TransformComponent>().get(); }
 		const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>().get(); }
 
+		//******** Parent/Child Functions *********
+		void SetParent(GameObject* parent, bool keepWorldPosition = true);
+		std::weak_ptr<GameObject> GetParent() const { return m_parent; }
+		const std::vector<std::shared_ptr<GameObject>>& GetChildren() const { return m_children; }
+		void RemoveAllChildren();
 
 	private:
 		//Transform m_transform;
@@ -53,6 +55,11 @@ namespace dae
 		std::map<std::type_index, std::shared_ptr<BaseComponent>> m_componentMap;
 		std::vector<std::shared_ptr<BaseComponent>> m_componentsToRemove;
 		std::queue<std::type_index> m_componentTypesToRemove;
+
+		//******** Parent/Child Variables *********
+		std::weak_ptr<GameObject> m_parent;
+		std::vector<std::shared_ptr<GameObject>> m_children;
+		bool IsDescendant(GameObject* potentialDescendant) const;
 	};
 
 	// Put the template function definitions in the header file.

@@ -38,7 +38,7 @@ set(MINIGIN_SOURCES
     
     Minigin/Texture2D.cpp
     Minigin/TextureComponent.cpp
-    Minigin/Transform.cpp
+    
     Minigin/TransformComponent.cpp
 )
 
@@ -59,7 +59,7 @@ set(MINIGIN_HEADERS
     
     Minigin/Texture2D.h
     Minigin/TextureComponent.h
-    Minigin/Transform.h
+    
     Minigin/TransformComponent.h
 )
 
