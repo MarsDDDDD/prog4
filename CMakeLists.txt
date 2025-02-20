@@ -20,6 +20,11 @@ else()
     endif()
 endif()
 
+
+
+# Add the compile definition before adding source files.
+add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
+
 # Define source files for Minigin
 set(MINIGIN_SOURCES
     Minigin/BaseComponent.cpp
