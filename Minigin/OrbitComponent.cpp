@@ -1,40 +1,24 @@
+// OrbitComponent.cpp
 #include "OrbitComponent.h"
-#include "GameObject.h"
-#include <gtc/constants.hpp>
-#include <iostream> // For debug logging
+#include "TransformComponent.h"
+#include "GameObject.h" // Add this include to resolve the undefined type error
+#include <cmath>
 
-dae::OrbitComponent::OrbitComponent(GameObject* pOwner, GameObject* pTarget, float radius, float speed)
-    : BaseComponent(pOwner), m_pTarget(pTarget), m_Radius(radius), m_Speed(speed), m_Angle(0.0f)
+dae::OrbitComponent::OrbitComponent(GameObject* pOwner, float radius, float speed)
+    : BaseComponent(pOwner)
+    , m_Radius(radius)
+    , m_Speed(speed)
+    , m_Angle(0.0f)
 {
-    if (!m_pTarget)
-    {
-        std::cerr << "OrbitComponent: Target GameObject is null!" << std::endl;
-    }
 }
 
 void dae::OrbitComponent::Update(float deltaTime)
 {
-    if (!m_pTarget)
-    {
-        std::cerr << "OrbitComponent: Target GameObject is null during update!" << std::endl;
-        return;
-    }
-
-    auto targetTransform = m_pTarget->GetTransform();
-    if (!targetTransform)
-    {
-        std::cerr << "OrbitComponent: Target TransformComponent is null during update!" << std::endl;
-        return;
-    }
-
     m_Angle += m_Speed * deltaTime;
-    if (m_Angle > glm::two_pi<float>())
-    {
-        m_Angle -= glm::two_pi<float>();
-    }
 
-    float x = targetTransform->GetLocalPosition().x + m_Radius * cos(m_Angle);
-    float y = targetTransform->GetLocalPosition().y + m_Radius * sin(m_Angle);
+    float x = m_Radius * cosf(m_Angle);
+    float y = m_Radius * sinf(m_Angle);
 
-    GetGameObject()->GetTransform()->SetLocalPosition(x, y, 0.0f);
+    // Update the local position relative to the parent
+    GetGameObject()->GetTransform()->SetLocalPosition(x, y, 0.0f); // Corrected: SetLocalPosition
 }

@@ -1,3 +1,4 @@
+// GameObject.cpp
 #include <string>
 #include "GameObject.h"
 #include "BaseComponent.h"
@@ -76,7 +77,8 @@ void dae::GameObject::SetLocalPosition(float x, float y)
 void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
 {
     // 1. Check for validity (prevent cycles and self-parenting)
-    if (parent == this || (parent && IsDescendant(parent)))
+    //    if (parent == this || IsDescendant(parent)) // INCORRECT order of arguments.
+    if (parent == this || (parent && parent->IsDescendant(this))) // Corrected order
     {
         return;  // Don't allow setting self or a descendant as parent.
     }
@@ -84,7 +86,7 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
     //Store original position to use later
     glm::vec3 originalWorldPosition{};
     if (keepWorldPosition)
-        originalWorldPosition = GetTransform()->GetLocalPosition();
+        originalWorldPosition = GetTransform()->GetWorldPosition(); //  Corrected:  Get *World* Position
 
 
     // 2. Remove from the previous parent (if any)
@@ -111,13 +113,18 @@ void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
     if (parent && keepWorldPosition)
     {
         // Get the parent's world position
-        glm::vec3 parentWorldPosition = parent->GetTransform()->GetLocalPosition();
+        glm::vec3 parentWorldPosition = parent->GetTransform()->GetWorldPosition(); //  Corrected: Get *World* Position
 
         // Calculate the new local position
         glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
 
         // Set the new local position
-        GetTransform()->SetLocalPosition(newLocalPosition);
+        GetTransform()->SetLocalPosition(newLocalPosition); //  No change needed here.
+    }
+    else
+    {
+        // If not keeping world position, we potentially moved.
+        GetTransform()->SetPositionDirty();
     }
 }
 

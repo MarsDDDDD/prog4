@@ -8,14 +8,14 @@ namespace dae
     class OrbitComponent : public BaseComponent
     {
     public:
-        OrbitComponent(GameObject* pOwner, GameObject* pTarget, float radius, float speed);
+        OrbitComponent(GameObject* pOwner, float radius, float speed);
 
         void Update(float deltaTime) override;
 
     private:
-        GameObject* m_pTarget;
         float m_Radius;
         float m_Speed;
         float m_Angle;
     };
+
 }
