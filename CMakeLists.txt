@@ -45,7 +45,7 @@ set(MINIGIN_SOURCES
     Minigin/TextureComponent.cpp
     
     Minigin/TransformComponent.cpp
-)
+    Minigin/OrbitComponent.cpp)
 
 set(MINIGIN_HEADERS
     Minigin/BaseComponent.h
@@ -66,7 +66,7 @@ set(MINIGIN_HEADERS
     Minigin/TextureComponent.h
     
     Minigin/TransformComponent.h
-)
+    Minigin/OrbitComponent.h)
 
 # Create executable
 add_executable(Minigin ${MINIGIN_SOURCES} ${MINIGIN_HEADERS})
