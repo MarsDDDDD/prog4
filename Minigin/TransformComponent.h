@@ -18,8 +18,8 @@ namespace dae
 
         // Getters and Setters
         const glm::vec3& GetLocalPosition() const { return m_LocalPosition; }
-        void SetLocalPosition(const glm::vec3& position) { m_LocalPosition = position; }
-        void SetLocalPosition(float x, float y, float z) { m_LocalPosition = glm::vec3(x, y, z); }
+        void SetLocalPosition(const glm::vec3& position) { m_LocalPosition = position; SetPositionDirty(); }
+        void SetLocalPosition(float x, float y, float z) { m_LocalPosition = glm::vec3(x, y, z); SetPositionDirty(); }
 
 
         const glm::vec3& GetWorldPosition();

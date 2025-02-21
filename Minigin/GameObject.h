@@ -48,7 +48,7 @@ namespace dae
 		std::weak_ptr<GameObject> GetParent() const { return m_parent; }
 		const std::vector<std::shared_ptr<GameObject>>& GetChildren() const { return m_children; }
 		void RemoveAllChildren();
-
+		void RemoveChild(GameObject* child);
 	private:
 		//Transform m_transform;
 		std::vector<std::shared_ptr<BaseComponent>> m_components; // Store base class pointers

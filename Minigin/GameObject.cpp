@@ -146,3 +146,13 @@ void dae::GameObject::RemoveAllChildren()
     //clear list, to be sure
     m_children.clear();
 }
+
+void dae::GameObject::RemoveChild(GameObject* child)
+{
+    auto it = std::remove_if(m_children.begin(), m_children.end(),
+        [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; });
+    if (it != m_children.end())
+    {
+        m_children.erase(it, m_children.end());
+    }
+}
