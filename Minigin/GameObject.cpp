@@ -1,183 +1,163 @@
-// GameObject.cpp
-#include <string>
+#include <algorithm>
 #include "GameObject.h"
 #include "BaseComponent.h"
-#include <algorithm>
 #include "TransformComponent.h"
 
-dae::GameObject::~GameObject() = default; //TODO: Delete all children
-
-void dae::GameObject::Update(float deltaTime)
+namespace dae
 {
-    for (const auto& component : m_components)
+    GameObject::GameObject()
     {
-        component->Update(deltaTime);
-    }
-    for (const auto& component : m_componentsToRemove)
-    {
-        auto it = std::find(m_components.begin(), m_components.end(), component);
-        if (it != m_components.end())
-        {
-            m_components.erase(it);
-        }
-
-        m_componentMap.erase(m_componentTypesToRemove.front());
-        m_componentTypesToRemove.pop();
-    }
-    m_componentsToRemove.clear();
-
-    //******** Update Children *********
-    for (const auto& child : m_children)
-    {
-        child->Update(deltaTime);
-    }
-}
-
-void dae::GameObject::FixedUpdate(float fixedTimeStep)
-{
-    for (const auto& component : m_components)
-    {
-        component->FixedUpdate(fixedTimeStep);
-    }
-
-    //******** FixedUpdate Children *********
-    for (const auto& child : m_children)
-    {
-        child->FixedUpdate(fixedTimeStep);
-    }
-}
-
-
-void dae::GameObject::Render() const
-{
-    for (const auto& component : m_components)
-    {
-        component->Render();
-    }
-
-    //******** Render Children *********
-    for (const auto& child : m_children)
-    {
-        child->Render();
-    }
-}
-
-void dae::GameObject::SetLocalPosition(float x, float y)
-{
-    // Get the TransformComponent.  If it doesn't exist, add it.
-    auto transform = GetComponent<TransformComponent>();
-	//TODO: Always assume transform component exist. Always make one during the construction of the GameObject
-    if (!transform)
-    {
-        transform = std::make_shared<TransformComponent>(this); // Pass 'this' to the constructor
+        auto transform = std::make_shared<TransformComponent>(this);
         AddComponent(transform);
     }
-    transform->SetLocalPosition(x, y, 0.0f); // Use the component's method.
-}
 
-void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
-{
-    // 1. Check for validity (prevent cycles and self-parenting)
-    //    if (parent == this || IsDescendant(parent)) // INCORRECT order of arguments.
-    if (parent == this || (parent && parent->IsDescendant(this))) // Corrected order
+    GameObject::~GameObject() = default;
+
+    void GameObject::Update(float deltaTime)
     {
-        return;  // Don't allow setting self or a descendant as parent.
-    }
-
-    //Store original position to use later
-    glm::vec3 originalWorldPosition{};
-    if (keepWorldPosition)
-        originalWorldPosition = GetTransform()->GetWorldPosition(); //  Corrected:  Get *World* Position
-
-
-    // 2. Remove from the previous parent (if any)
-    if (auto currentParent = m_parent.lock())  // Use lock() to get a shared_ptr safely
-    {
-        auto& siblings = currentParent->m_children;
-        const auto it = std::find(siblings.begin(), siblings.end(), shared_from_this());
-        if (it != siblings.end())
+        for (const auto& component : m_components)
         {
-            siblings.erase(it);
+            component->Update(deltaTime);
+        }
+
+        for (const auto& component : m_componentsToRemove)
+        {
+            auto it = std::find(m_components.begin(), m_components.end(), component);
+            if (it != m_components.end())
+            {
+                m_components.erase(it);
+            }
+
+            m_componentMap.erase(m_componentTypesToRemove.front());
+            m_componentTypesToRemove.pop();
+        }
+        m_componentsToRemove.clear();
+
+        for (const auto& child : m_children)
+        {
+            child->Update(deltaTime);
         }
     }
 
-    // 3. Set the new parent (or clear if parent is nullptr)
-    m_parent = parent ? parent->shared_from_this() : nullptr; // store weak_ptr
-
-    // 4. Add to the new parent's children list (if not nullptr)
-    if (parent)
+    void GameObject::FixedUpdate(float fixedTimeStep)
     {
-        parent->m_children.push_back(shared_from_this()); // Use shared_from_this()
-    }
-
-    // 5. Calculate and set the local position based on whether to keep the world position
-    if (parent && keepWorldPosition)
-    {
-        // Get the parent's world position
-        glm::vec3 parentWorldPosition = parent->GetTransform()->GetWorldPosition(); //  Corrected: Get *World* Position
-
-        // Calculate the new local position
-        glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
-
-        // Set the new local position
-        GetTransform()->SetLocalPosition(newLocalPosition); //  No change needed here.
-    }
-    else
-    {
-        // If not keeping world position, we potentially moved.
-        GetTransform()->SetPositionDirty();
-    }
-}
-
-bool dae::GameObject::IsDescendant(GameObject* potentialDescendant) const
-{
-    // Traverse up the hierarchy from the potential descendant.
-    auto current = potentialDescendant->m_parent.lock();
-    while (current)
-    {
-        if (current.get() == this)  // Check for direct comparison
+        for (const auto& component : m_components)
         {
-            return true; // Found 'this' as an ancestor.
+            component->FixedUpdate(fixedTimeStep);
         }
-        current = current->m_parent.lock(); // Move up to the next ancestor
-    }
-    return false;
-}
 
-void dae::GameObject::RemoveAllChildren()
-{
-    //Set all parents to null, this will remove the gameObject from the list
-    for (auto& child : m_children)
+        for (const auto& child : m_children)
+        {
+            child->FixedUpdate(fixedTimeStep);
+        }
+    }
+
+    void GameObject::Render() const
     {
-        child->SetParent(nullptr);
-    }
-    //clear list, to be sure
-    m_children.clear();
-}
+        for (const auto& component : m_components)
+        {
+            component->Render();
+        }
 
-void dae::GameObject::RemoveChild(GameObject* child)
-{
-    if (!child || !IsDescendant(child))
+        for (const auto& child : m_children)
+        {
+            child->Render();
+        }
+    }
+
+    void GameObject::SetLocalPosition(float x, float y)
     {
-        return; // Check if the child is valid (not null and one of its children)
+        // Directly call the TransformComponent since it always exists
+        GetTransform()->SetLocalPosition(x, y, 0.0f);
     }
 
-    auto it = std::remove_if(m_children.begin(), m_children.end(),
-        [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; });
-    if (it != m_children.end())
+    void GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
     {
-        m_children.erase(it, m_children.end()); // Remove the given child from the children list
+        if (parent == this || (parent && parent->IsDescendant(this)))
+        {
+            return;
+        }
+
+        glm::vec3 originalWorldPosition{};
+        if (keepWorldPosition)
+        {
+            originalWorldPosition = GetTransform()->GetWorldPosition();
+        }
+
+        if (auto currentParent = m_parent.lock())
+        {
+            auto& siblings = currentParent->m_children;
+            const auto it = std::find(siblings.begin(), siblings.end(), shared_from_this());
+            if (it != siblings.end())
+            {
+                siblings.erase(it);
+            }
+        }
+
+        m_parent = parent ? parent->shared_from_this() : nullptr;
+        if (parent)
+        {
+            parent->m_children.push_back(shared_from_this());
+        }
+
+        if (parent && keepWorldPosition)
+        {
+            glm::vec3 parentWorldPosition = parent->GetTransform()->GetWorldPosition();
+            glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
+            GetTransform()->SetLocalPosition(newLocalPosition);
+        }
+        else
+        {
+            GetTransform()->SetPositionDirty();
+        }
     }
 
-    // Remove itself as a parent of the child
-    child->m_parent.reset();
+    void GameObject::RemoveAllChildren()
+    {
+        for (auto& child : m_children)
+        {
+            child->SetParent(nullptr);
+        }
+        m_children.clear();
+    }
 
-	// Update position: New position = old local position + old parent world position
-	auto childTransform = child->GetTransform();
-	if (childTransform)
-	{
-		auto childWorldPosition = childTransform->GetWorldPosition();
-		childTransform->SetLocalPosition(childWorldPosition);
-	}
+    void GameObject::RemoveChild(GameObject* child)
+    {
+        if (!child || !IsDescendant(child))
+        {
+            return;
+        }
 
+        auto it = std::remove_if(
+            m_children.begin(),
+            m_children.end(),
+            [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; }
+        );
+
+        if (it != m_children.end())
+        {
+            m_children.erase(it, m_children.end());
+        }
+
+        child->m_parent.reset();
+
+        // Always adjust child's position using its existing transform
+        auto childTransform = child->GetTransform();
+        auto childWorldPosition = childTransform->GetWorldPosition();
+        childTransform->SetLocalPosition(childWorldPosition);
+    }
+
+    bool GameObject::IsDescendant(GameObject* potentialDescendant) const
+    {
+        auto current = potentialDescendant->m_parent.lock();
+        while (current)
+        {
+            if (current.get() == this)
+            {
+                return true;
+            }
+            current = current->m_parent.lock();
+        }
+        return false;
+    }
 }
