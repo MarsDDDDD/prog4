@@ -157,17 +157,27 @@ void dae::GameObject::RemoveAllChildren()
 
 void dae::GameObject::RemoveChild(GameObject* child)
 {
+    if (!child || !IsDescendant(child))
+    {
+        return; // Check if the child is valid (not null and one of its children)
+    }
+
     auto it = std::remove_if(m_children.begin(), m_children.end(),
         [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; });
     if (it != m_children.end())
     {
-        m_children.erase(it, m_children.end());
+        m_children.erase(it, m_children.end()); // Remove the given child from the children list
     }
-    //TODO: RemoveChild has to do four things
-    //    Check if the child is valid(not null and one of its
-    //        children)
-    //    Remove the given child from the children list
-    //    Remove itself as a parent of the child.
-    //    Update position, rotation and scale
+
+    // Remove itself as a parent of the child
+    child->m_parent.reset();
+
+	// Update position: New position = old local position + old parent world position
+	auto childTransform = child->GetTransform();
+	if (childTransform)
+	{
+		auto childWorldPosition = childTransform->GetWorldPosition();
+		childTransform->SetLocalPosition(childWorldPosition);
+	}
 
 }

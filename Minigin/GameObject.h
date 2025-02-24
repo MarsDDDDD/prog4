@@ -70,12 +70,11 @@ namespace dae
 		// Check if a component of this type already exists
 		if (HasComponent<T>())
 		{
-			return; // Or throw an exception, depending on desired behavior
+			return; 
 		}
 
 		m_components.push_back(component);
 		m_componentMap[typeid(T)] = component;
-		//component->SetGameObject(this); // Important: Set the GameObject pointer // REMOVE
 		//Call base class constructor
 	}
 
