@@ -26,7 +26,7 @@ namespace dae
         const glm::vec3& GetWorldPosition();
 
 
-        const void SetPositionDirty() { m_IsDirty = true; }
+        const void SetPositionDirty() { m_IsDirty = true; } //TODO: Set the transform of the child to dirty as well
         bool IsPositionDirty() { return m_IsDirty; }
     private:
         glm::vec3 m_LocalPosition{};

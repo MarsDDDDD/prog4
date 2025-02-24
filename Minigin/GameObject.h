@@ -58,6 +58,7 @@ namespace dae
 
 		//******** Parent/Child Variables *********
 		std::weak_ptr<GameObject> m_parent;
+		//TODO: if not shared, change to unique pointer.
 		std::vector<std::shared_ptr<GameObject>> m_children;
 		bool IsDescendant(GameObject* potentialDescendant) const;
 	};

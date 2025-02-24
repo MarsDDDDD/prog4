@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "TransformComponent.h"
 
-dae::GameObject::~GameObject() = default;
+dae::GameObject::~GameObject() = default; //TODO: Delete all children
 
 void dae::GameObject::Update(float deltaTime)
 {
@@ -66,6 +66,7 @@ void dae::GameObject::SetLocalPosition(float x, float y)
 {
     // Get the TransformComponent.  If it doesn't exist, add it.
     auto transform = GetComponent<TransformComponent>();
+	//TODO: Always assume transform component exist. Always make one during the construction of the GameObject
     if (!transform)
     {
         transform = std::make_shared<TransformComponent>(this); // Pass 'this' to the constructor
@@ -162,4 +163,11 @@ void dae::GameObject::RemoveChild(GameObject* child)
     {
         m_children.erase(it, m_children.end());
     }
+    //TODO: RemoveChild has to do four things
+    //    Check if the child is valid(not null and one of its
+    //        children)
+    //    Remove the given child from the children list
+    //    Remove itself as a parent of the child.
+    //    Update position, rotation and scale
+
 }
