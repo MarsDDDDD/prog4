@@ -1,5 +1,3 @@
-// GameObject.h
-
 #pragma once
 #include <memory>
 #include <vector>
@@ -17,25 +15,28 @@ namespace dae
     class GameObject final : public std::enable_shared_from_this<GameObject>
     {
     public:
-        GameObject(); // Changed: define constructor in .cpp to create TransformComponent
+        GameObject();
         ~GameObject();
 
         void Update(float deltaTime);
         void FixedUpdate(float fixedTimeStep);
         void Render() const;
 
+        // Position
         void SetLocalPosition(float x, float y);
 
+        // Disallow copying
         GameObject(const GameObject& other) = delete;
         GameObject(GameObject&& other) = delete;
         GameObject& operator=(const GameObject& other) = delete;
         GameObject& operator=(GameObject&& other) = delete;
 
+        // Component Management
         template <typename T>
-        void AddComponent(std::shared_ptr<T> component);
+        void AddComponent(std::unique_ptr<T> component);
 
         template <typename T>
-        std::shared_ptr<T> GetComponent() const;
+        T* GetComponent() const;
 
         template <typename T>
         bool HasComponent() const;
@@ -43,9 +44,10 @@ namespace dae
         template <typename T>
         void RemoveComponent();
 
-        TransformComponent* GetTransform() { return GetComponent<TransformComponent>().get(); }
-        const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>().get(); }
+        TransformComponent* GetTransform() { return GetComponent<TransformComponent>(); }
+        const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>(); }
 
+        // Hierarchy
         void SetParent(GameObject* parent, bool keepWorldPosition = true);
         std::weak_ptr<GameObject> GetParent() const { return m_parent; }
         const std::vector<std::shared_ptr<GameObject>>& GetChildren() const { return m_children; }
@@ -53,31 +55,44 @@ namespace dae
         void RemoveChild(GameObject* child);
 
     private:
-        std::vector<std::shared_ptr<BaseComponent>> m_components;
-        std::map<std::type_index, std::shared_ptr<BaseComponent>> m_componentMap;
-        std::vector<std::shared_ptr<BaseComponent>> m_componentsToRemove;
+        // Component storage
+        std::vector<std::unique_ptr<BaseComponent>> m_components;
+        std::map<std::type_index, BaseComponent*> m_componentMap;
+
+        // For deferred removal
+        std::vector<BaseComponent*> m_componentsToRemove;
         std::queue<std::type_index> m_componentTypesToRemove;
 
+        // Parent/Child
         std::weak_ptr<GameObject> m_parent;
         std::vector<std::shared_ptr<GameObject>> m_children;
 
         bool IsDescendant(GameObject* potentialDescendant) const;
     };
 
+    // Template Implementations
     template <typename T>
-    void GameObject::AddComponent(std::shared_ptr<T> component)
+    void GameObject::AddComponent(std::unique_ptr<T> component)
     {
-        if (HasComponent<T>()) return;
-        m_components.push_back(component);
-        m_componentMap[typeid(T)] = component;
+        if (HasComponent<T>())
+            return;
+
+        // Store raw pointer in the map before we move it
+        T* rawPtr = component.get();
+        m_componentMap[typeid(T)] = rawPtr;
+
+        // Now move into the vector
+        m_components.push_back(std::move(component));
     }
 
     template <typename T>
-    std::shared_ptr<T> GameObject::GetComponent() const
+    T* GameObject::GetComponent() const
     {
         auto it = m_componentMap.find(typeid(T));
-        if (it != m_componentMap.end()) {
-            return std::dynamic_pointer_cast<T>(it->second);
+        if (it != m_componentMap.end())
+        {
+            // Use dynamic_cast for proper downcasting
+            return dynamic_cast<T*>(it->second);
         }
         return nullptr;
     }
@@ -94,8 +109,9 @@ namespace dae
         auto typeIndex = typeid(T);
         if (m_componentMap.count(typeIndex) > 0)
         {
-            auto component = m_componentMap[typeIndex];
-            m_componentsToRemove.push_back(component);
+            auto ptr = m_componentMap[typeid(T)];
+            // Mark for removal
+            m_componentsToRemove.push_back(ptr);
             m_componentTypesToRemove.push(typeIndex);
         }
     }

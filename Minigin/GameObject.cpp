@@ -7,32 +7,47 @@ namespace dae
 {
     GameObject::GameObject()
     {
-        auto transform = std::make_shared<TransformComponent>(this);
-        AddComponent(transform);
+        // Create TransformComponent with unique ownership
+        auto transform = std::make_unique<TransformComponent>(this);
+        AddComponent(std::move(transform));
     }
 
     GameObject::~GameObject() = default;
 
     void GameObject::Update(float deltaTime)
     {
-        for (const auto& component : m_components)
+        // Update all components
+        for (auto& component : m_components)
         {
             component->Update(deltaTime);
         }
 
-        for (const auto& component : m_componentsToRemove)
+        // Apply pending removals
+        for (auto* componentToRemove : m_componentsToRemove)
         {
-            auto it = std::find(m_components.begin(), m_components.end(), component);
+            // Find this pointer in m_components
+            auto it = std::find_if(
+                m_components.begin(),
+                m_components.end(),
+                [componentToRemove](std::unique_ptr<BaseComponent>& c) {
+                    return c.get() == componentToRemove;
+                }
+            );
+
+            // Remove from vector if found
             if (it != m_components.end())
             {
                 m_components.erase(it);
             }
 
-            m_componentMap.erase(m_componentTypesToRemove.front());
+            // Also remove from the lookup map
+            auto typeIndex = m_componentTypesToRemove.front();
+            m_componentMap.erase(typeIndex);
             m_componentTypesToRemove.pop();
         }
         m_componentsToRemove.clear();
 
+        // Update children
         for (const auto& child : m_children)
         {
             child->Update(deltaTime);
@@ -41,7 +56,7 @@ namespace dae
 
     void GameObject::FixedUpdate(float fixedTimeStep)
     {
-        for (const auto& component : m_components)
+        for (auto& component : m_components)
         {
             component->FixedUpdate(fixedTimeStep);
         }
@@ -54,7 +69,7 @@ namespace dae
 
     void GameObject::Render() const
     {
-        for (const auto& component : m_components)
+        for (auto& component : m_components)
         {
             component->Render();
         }
@@ -67,19 +82,23 @@ namespace dae
 
     void GameObject::SetLocalPosition(float x, float y)
     {
-        // Directly call the TransformComponent since it always exists
-        GetTransform()->SetLocalPosition(x, y, 0.0f);
+        // Directly call the TransformComponent since it's always present
+        if (auto* transform = GetTransform())
+        {
+            transform->SetLocalPosition(x, y, 0.0f);
+        }
     }
 
     void GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
     {
+        // Prevent self-parenting or cyclical references
         if (parent == this || (parent && parent->IsDescendant(this)))
         {
             return;
         }
 
         glm::vec3 originalWorldPosition{};
-        if (keepWorldPosition)
+        if (keepWorldPosition && GetTransform())
         {
             originalWorldPosition = GetTransform()->GetWorldPosition();
         }
@@ -106,7 +125,7 @@ namespace dae
             glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
             GetTransform()->SetLocalPosition(newLocalPosition);
         }
-        else
+        else if (GetTransform())
         {
             GetTransform()->SetPositionDirty();
         }
@@ -141,10 +160,12 @@ namespace dae
 
         child->m_parent.reset();
 
-        // Always adjust child's position using its existing transform
-        auto childTransform = child->GetTransform();
-        auto childWorldPosition = childTransform->GetWorldPosition();
-        childTransform->SetLocalPosition(childWorldPosition);
+        // Recalculate child's local position based on its previous world position
+        if (auto* childTransform = child->GetTransform())
+        {
+            glm::vec3 childWorldPosition = childTransform->GetWorldPosition();
+            childTransform->SetLocalPosition(childWorldPosition);
+        }
     }
 
     bool GameObject::IsDescendant(GameObject* potentialDescendant) const

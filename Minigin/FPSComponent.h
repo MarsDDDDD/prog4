@@ -1,31 +1,30 @@
 #pragma once
 #include "BaseComponent.h"
 #include <vector>
-#include <memory> // For weak_ptr
 
 namespace dae
 {
-	class TextComponent; // Forward declare TextComponent
-	class GameObject;
+    // Forward-declare classes used here
+    class TextComponent;
 
-	class FPSComponent : public BaseComponent
-	{
-	public:
-		FPSComponent(GameObject* pOwner); // Add GameObject* to constructor
-		~FPSComponent() override = default;
+    class FPSComponent final : public BaseComponent
+    {
+    public:
+        explicit FPSComponent(GameObject* pOwner);
+        ~FPSComponent() override = default;
 
-		void Update(float deltaTime) override;
+        void Update(float deltaTime) override;
+        float GetFPS() const;
 
-		float GetFPS() const;
-	private:
-		//Use weak_ptr to fix dependency and improve efficiency
-		std::weak_ptr<TextComponent> m_textComponent{};
+    private:
+        float m_fps;
+        float m_timeAccumulator;
+        int m_frameCount;
 
-		float m_fps;
-		float m_timeAccumulator;
-		int m_frameCount;
-		std::vector<float> m_frameTimes; // To store the times of the last 'x' frames
-		static constexpr size_t m_maxSamples = 100;  //Store 100 samples, average those
+        TextComponent* m_textComponent{ nullptr };
 
-	};
-}
+        // Buffer of frame times for averaging
+        std::vector<float> m_frameTimes;
+        const size_t m_maxSamples{ 100 };
+    };
+} 
