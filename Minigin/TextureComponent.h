@@ -14,7 +14,7 @@ namespace dae
 		TextureComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture); // Add GameObject
 		~TextureComponent() override = default;
 
-		void Render() const override;
+		void Render() override;
 		void SetTexture(std::shared_ptr<Texture2D> texture);
 
 		// Optional: Add methods to control scaling, rotation, etc. if needed.

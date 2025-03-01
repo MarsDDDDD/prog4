@@ -9,7 +9,7 @@ namespace dae
 		virtual ~BaseComponent() = default;
 		virtual void Update(float /*deltaTime*/) {} // Pure virtual makes BaseComponent abstract
 		virtual void FixedUpdate(float /*fixedTimeStep*/) {} // Pure virtual
-		virtual void Render() const {} // Pure virtual
+		virtual void Render() {} // Pure virtual
 
 		GameObject* GetGameObject() const { return m_gameObject; }
 	protected:

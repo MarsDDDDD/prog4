@@ -16,7 +16,7 @@ namespace dae
 		~TextComponent() override = default;
 
 		void Update(float deltaTime) override;
-		void Render() const override;
+		void Render() override;
 
 		void SetText(const std::string& text);
 		void SetColor(SDL_Color color);

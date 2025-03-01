@@ -20,10 +20,35 @@ else()
     endif()
 endif()
 
-
-
 # Add the compile definition before adding source files.
 add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
+
+# Define ImGui source files
+set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/3rdParty/imgui-1.91.8")
+set(IMGUI_SOURCES
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/imgui_plot.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+# Define ImGui headers
+set(IMGUI_HEADERS
+    ${IMGUI_DIR}/imconfig.h
+    ${IMGUI_DIR}/imgui.h
+    ${IMGUI_DIR}/imgui_internal.h
+    ${IMGUI_DIR}/imstb_rectpack.h
+    ${IMGUI_DIR}/imstb_textedit.h
+    ${IMGUI_DIR}/imstb_truetype.h
+    ${IMGUI_DIR}/imgui_plot.h
+
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.h
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.h
+)
 
 # Define source files for Minigin
 set(MINIGIN_SOURCES
@@ -45,7 +70,8 @@ set(MINIGIN_SOURCES
     Minigin/TextureComponent.cpp
     
     Minigin/TransformComponent.cpp
-    Minigin/OrbitComponent.cpp)
+    Minigin/OrbitComponent.cpp
+    Minigin/PlotComponent.cpp)
 
 set(MINIGIN_HEADERS
     Minigin/BaseComponent.h
@@ -66,16 +92,19 @@ set(MINIGIN_HEADERS
     Minigin/TextureComponent.h
     
     Minigin/TransformComponent.h
-    Minigin/OrbitComponent.h)
+    Minigin/OrbitComponent.h
+    Minigin/PlotComponent.h)
 
 # Create executable
-add_executable(Minigin ${MINIGIN_SOURCES} ${MINIGIN_HEADERS})
-
+add_executable(Minigin ${MINIGIN_SOURCES} ${MINIGIN_HEADERS} ${IMGUI_SOURCES} ${IMGUI_HEADERS})
 
 # Use target_compile_features for C++20.
 target_compile_features(Minigin PRIVATE cxx_std_20)
-# Set warning level 4 and treat warnings as errors
+# Set warning level 4 and treat warnings as errors for Minigin code, but not for third-party code
 target_compile_options(Minigin PRIVATE /W4 /WX)
+
+# Disable warnings as errors for ImGui files
+set_source_files_properties(${IMGUI_SOURCES} PROPERTIES COMPILE_FLAGS "/WX-")
 
 # Set up third-party libraries
 set(SDL2_DIR "${CMAKE_SOURCE_DIR}/3rdParty/SDL2")
@@ -108,6 +137,8 @@ target_include_directories(Minigin PRIVATE
     ${SDL2_IMAGE_DIR}/include
     ${SDL2_TTF_DIR}/include
     ${GLM_DIR}
+    ${IMGUI_DIR}
+    ${IMGUI_DIR}/backends
 )
 
 # Add VLD include directory if available
@@ -138,6 +169,7 @@ target_link_libraries(Minigin PRIVATE
     SDL2main.lib
     SDL2_image.lib
     SDL2_ttf.lib
+    opengl32.lib
 )
 target_link_libraries(Minigin PRIVATE imgui)
 
@@ -175,3 +207,6 @@ add_custom_command(TARGET Minigin POST_BUILD
         ${CMAKE_SOURCE_DIR}/Data
         $<TARGET_FILE_DIR:Minigin>/Data
 )
+
+# Create source groups for better organization in IDEs (similar to Visual Studio filters)
+source_group("ImGui" FILES ${IMGUI_SOURCES} ${IMGUI_HEADERS})

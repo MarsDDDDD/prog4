@@ -15,7 +15,7 @@ dae::TextureComponent::TextureComponent(GameObject* pOwner, std::shared_ptr<Text
 }
 
 
-void dae::TextureComponent::Render() const
+void dae::TextureComponent::Render() 
 {
 	if (m_texture)
 	{
