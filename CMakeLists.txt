@@ -111,25 +111,6 @@ set(SDL2_DIR "${CMAKE_SOURCE_DIR}/3rdParty/SDL2")
 set(SDL2_IMAGE_DIR "${CMAKE_SOURCE_DIR}/3rdParty/SDL2_image")
 set(SDL2_TTF_DIR "${CMAKE_SOURCE_DIR}/3rdParty/SDL2_ttf")
 set(GLM_DIR "${CMAKE_SOURCE_DIR}/3rdParty/glm")
-set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/3rdParty/imgui-1.91.8")
-
-set(IMGUI_SOURCES
-    "${IMGUI_DIR}/imgui.cpp"
-    "${IMGUI_DIR}/imgui_draw.cpp"
-    "${IMGUI_DIR}/imgui_tables.cpp"
-    "${IMGUI_DIR}/imgui_widgets.cpp"
-    # Pick your backend (SDL, OpenGL, etc.):
-    "${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp"
-    "${IMGUI_DIR}/backends/imgui_impl_sdlrenderer.cpp"
-)
-
-add_library(imgui STATIC ${IMGUI_SOURCES})
-
-target_include_directories(imgui PUBLIC
-    "${IMGUI_DIR}"
-    "${IMGUI_DIR}/backends"
-)
-
 
 # Include directories
 target_include_directories(Minigin PRIVATE
@@ -171,7 +152,6 @@ target_link_libraries(Minigin PRIVATE
     SDL2_ttf.lib
     opengl32.lib
 )
-target_link_libraries(Minigin PRIVATE imgui)
 
 # Add VLD library if available
 if(DEFINED ENV{VLD_DIR})
