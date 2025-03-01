@@ -1,3 +1,4 @@
+// PlotComponent.cpp
 #include "PlotComponent.h"
 #include "GameObject.h"
 #include "imgui.h"
@@ -8,44 +9,35 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <numeric> // For std::accumulate
+#include <ranges>
+#include <algorithm>
 
 dae::PlotComponent::PlotComponent(GameObject* gameObject) :
 	BaseComponent(gameObject)
 	, m_NumSamples(10)
 	, m_IsGeneratingData(false)
+	, m_DataReady(false)
 {
 }
 
-void dae::PlotComponent::Render() const
+void dae::PlotComponent::Render() 
 {
 	ImGui::Begin("Exercise 2");
 
-	int numSamples = m_NumSamples;
-	ImGui::InputInt("##numsamples", &numSamples);
-	if (ImGui::IsItemEdited())
-	{
-		m_NumSamples = numSamples;
-		if (m_NumSamples < 1)
-			m_NumSamples = 1;
-		if (m_NumSamples > 10) // Limit to 10 steps as per original example
-			m_NumSamples = 10;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("-"))
-	{
-		m_NumSamples--;
-		if (m_NumSamples < 1)
-			m_NumSamples = 1;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("+"))
-	{
-		m_NumSamples++;
-		if (m_NumSamples > 10) // Limit to 10 steps as per original example
-			m_NumSamples = 10;
-	}
+	// Local variable to hold the input value, avoids modifying m_NumSamples directly.
+	//int numSamples = m_NumSamples;
+	ImGui::InputInt("##numsamples", &m_NumSamples);
+	bool numSamplesChanged = ImGui::IsItemEdited(); // Check if edited *before* the buttons.
 	ImGui::SameLine();
 	ImGui::Text("# samples");
+
+	if (numSamplesChanged)
+	{
+		if (m_NumSamples < 1)
+			m_NumSamples = 1;
+	}
+
 
 
 	if (ImGui::Button("Trash the cache"))
@@ -57,25 +49,22 @@ void dae::PlotComponent::Render() const
 	{
 		ImGui::Text("Wait for it...");
 	}
-	else if (!m_PlotValuesX.empty())
+	else if (m_DataReady) // Use a flag to indicate data is ready.
 	{
 		ImGui::PlotConfig conf{};
 		conf.values.xs = m_PlotValuesX.data();
 		conf.values.ys = m_PlotValuesY.data();
-		conf.values.count = m_PlotValuesX.size();
+		//conf.values.count = 10;
+        conf.values.count = static_cast<int>(m_PlotValuesX.size());
 		conf.scale.min = 0;
-		conf.scale.max = 20000; // Adjust max scale based on expected values, can be auto-scaled if needed
+		// equal to max(m_PlotValueY)
+		conf.scale.max = *std::max_element(m_PlotValuesY.begin(),m_PlotValuesY.end());
 		conf.tooltip.show = true;
 		conf.tooltip.format = "x=%.0f, y=%.0f us";
 		conf.grid_x.show = true;
 		conf.grid_y.show = true;
 		conf.frame_size = ImVec2(400, 400);
 		conf.line_thickness = 2.f;
-		conf.x_ticks.show = true;
-		conf.y_ticks.show = true;
-		conf.x_axis.label = "Step Size";
-		conf.y_axis.label = "Time (microseconds)";
-
 
 		ImGui::Plot("cache_plot", conf);
 	}
@@ -83,32 +72,69 @@ void dae::PlotComponent::Render() const
 	ImGui::End();
 }
 
-void dae::PlotComponent::GeneratePlotData() const
+void dae::PlotComponent::GeneratePlotData()
 {
 	m_IsGeneratingData = true;
+	m_DataReady = false; // Reset the flag.
 	m_PlotValuesX.clear();
 	m_PlotValuesY.clear();
 
-	std::vector<int> vec(67108864); // Allocates 2^26 integers on the heap
-	for (int i = 0; i < 67108864; i++)
+	// Run the test multiple times and average the results
+	std::vector<std::vector<float>> all_runs_y;
+
+	int steps_max = 1024;
+	int steps_count = 0;
+	for (int temp_step = 1; temp_step <= steps_max; temp_step *= 2)
 	{
-		vec[i] = i;
+		steps_count++;
 	}
 
-	int steps = 1;
-	for (int step_index = 0; step_index < m_NumSamples; ++step_index)
+
+	for (int sample = 0; sample < m_NumSamples; ++sample)
 	{
-		const auto start = std::chrono::high_resolution_clock::now();
-		for (int i = 0; i < 67108864; i += steps)
+		std::vector<int> vec(67108864); // Allocates 2^26 integers on the heap
+		for (int i = 0; i < 67108864; i++)
 		{
-			vec[i] *= 2;
+			vec[i] = i;
 		}
-		const auto end = std::chrono::high_resolution_clock::now();
-		const auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-		std::cout << steps << ": " << total << std::endl;
-		m_PlotValuesX.push_back(static_cast<float>(steps));
-		m_PlotValuesY.push_back(static_cast<float>(total));
-		steps *= 2;
+
+		std::vector<float> run_results_y;
+		int steps = 1;
+		int step_idx = 0;
+
+		do
+		{
+
+			const auto start = std::chrono::high_resolution_clock::now();
+			for (int i = 0; i < 67108864; i += steps)
+			{
+				vec[i] *= 2;
+			}
+			const auto end = std::chrono::high_resolution_clock::now();
+			const auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+			if (sample == 0)
+				m_PlotValuesX.push_back(static_cast<float>(steps)); // Only need to store X values once.
+			run_results_y.push_back(static_cast<float>(total));
+			steps *= 2;
+			step_idx++;
+		} while (steps <= steps_max);
+
+		all_runs_y.push_back(run_results_y);
 	}
+
+
+	// Average the results
+	for (int i = 0; i < steps_count; ++i)
+	{
+		float sum = 0.0f;
+		for (const auto& run : all_runs_y)
+		{
+			sum += run[i];
+		}
+		m_PlotValuesY.push_back(sum / static_cast<float>(m_NumSamples));
+	}
+
+
 	m_IsGeneratingData = false;
+	m_DataReady = true; // Set the flag when data is ready.
 }

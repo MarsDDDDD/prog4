@@ -1,3 +1,4 @@
+// PlotComponent.h
 #pragma once
 #include "BaseComponent.h"
 #include <vector>
@@ -10,12 +11,13 @@ namespace dae
 		PlotComponent(GameObject* gameObject);
 		virtual ~PlotComponent() = default;
 
-		virtual void Render() const override;
+		virtual void Render()  override;
 
-		void GeneratePlotData() const;
+		void GeneratePlotData(); 
 	private:
 		int m_NumSamples;
 		bool m_IsGeneratingData;
+		bool m_DataReady; // Flag to indicate if plot data is available.
 		std::vector<float> m_PlotValuesX;
 		std::vector<float> m_PlotValuesY;
 	};

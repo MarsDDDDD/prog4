@@ -19,7 +19,7 @@ void dae::TextComponent::Update(float /*deltaTime*/)  // deltaTime is unused, bu
 }
 
 
-void dae::TextComponent::Render() const
+void dae::TextComponent::Render()
 {
 	if (m_textTexture)
 	{
