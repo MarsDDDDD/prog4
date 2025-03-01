@@ -15,7 +15,7 @@
 
 dae::PlotComponent::PlotComponent(GameObject* gameObject) :
 	BaseComponent(gameObject)
-	, m_NumSamples(10)
+	, m_NumSamples1(10)
 	, m_IsGeneratingData(false)
 	, m_DataReady(false)
 {
@@ -23,19 +23,16 @@ dae::PlotComponent::PlotComponent(GameObject* gameObject) :
 
 void dae::PlotComponent::Render() 
 {
-	ImGui::Begin("Exercise 2");
-
-	// Local variable to hold the input value, avoids modifying m_NumSamples directly.
-	//int numSamples = m_NumSamples;
-	ImGui::InputInt("##numsamples", &m_NumSamples);
+	ImGui::Begin("Exercise 1");
+	ImGui::InputInt("##numsamples", &m_NumSamples1);
 	bool numSamplesChanged = ImGui::IsItemEdited(); // Check if edited *before* the buttons.
 	ImGui::SameLine();
 	ImGui::Text("# samples");
 
 	if (numSamplesChanged)
 	{
-		if (m_NumSamples < 1)
-			m_NumSamples = 1;
+		if (m_NumSamples1 < 1)
+			m_NumSamples1 = 1;
 	}
 
 
@@ -54,10 +51,8 @@ void dae::PlotComponent::Render()
 		ImGui::PlotConfig conf{};
 		conf.values.xs = m_PlotValuesX.data();
 		conf.values.ys = m_PlotValuesY.data();
-		//conf.values.count = 10;
         conf.values.count = static_cast<int>(m_PlotValuesX.size());
 		conf.scale.min = 0;
-		// equal to max(m_PlotValueY)
 		conf.scale.max = *std::max_element(m_PlotValuesY.begin(),m_PlotValuesY.end());
 		conf.tooltip.show = true;
 		conf.tooltip.format = "x=%.0f, y=%.0f us";
@@ -66,13 +61,13 @@ void dae::PlotComponent::Render()
 		conf.frame_size = ImVec2(400, 400);
 		conf.line_thickness = 2.f;
 
-		ImGui::Plot("cache_plot", conf);
+		ImGui::Plot("plot1", conf);
 	}
 
 	ImGui::End();
 }
 
-void dae::PlotComponent::GeneratePlotData()
+void dae::PlotComponent::GeneratePlotData(int exerciseNr)
 {
 	m_IsGeneratingData = true;
 	m_DataReady = false; // Reset the flag.
@@ -90,12 +85,40 @@ void dae::PlotComponent::GeneratePlotData()
 	}
 
 
-	for (int sample = 0; sample < m_NumSamples; ++sample)
+	for (int sample = 0; sample < m_NumSamples1; ++sample)
 	{
-		std::vector<int> vec(67108864); // Allocates 2^26 integers on the heap
-		for (int i = 0; i < 67108864; i++)
+		std::vector<int> vecFloat(67108864); // Allocates 2^26 integers on the heap
+		std::vector<GameObject3D> vecGO(67108864);
+		std::vector<GameObject3DAlt> vecAlt(67108864);
+
+		switch (exerciseNr)
 		{
-			vec[i] = i;
+		case 0:
+			for (int i = 0; i < 67108864; i++)
+			{
+				vecFloat[i] = i;
+			}
+			break;
+
+		case 1:
+			for (int i = 0; i < 67108864; i++)
+			{
+				vecGO[i].transform = {
+				1,0,0,0,
+				0,1,0,0,
+				0,0,1,0,
+				0,0,0,1 };
+				vecGO[i].ID = i;
+			}
+			break;
+
+		case 2:
+			for (int i = 0; i < 67108864; i++)
+			{
+				vecAlt[i].transform = new Transform();
+				vecAlt[i].ID = i;
+			}
+			break;
 		}
 
 		std::vector<float> run_results_y;
@@ -106,9 +129,29 @@ void dae::PlotComponent::GeneratePlotData()
 		{
 
 			const auto start = std::chrono::high_resolution_clock::now();
-			for (int i = 0; i < 67108864; i += steps)
+			switch (exerciseNr)
 			{
-				vec[i] *= 2;
+			case 0:
+
+				for (int i = 0; i < 67108864; i += steps)
+				{
+					vecFloat[i] *= 2;
+				}
+				break;
+
+			case 1:
+				for (int i = 0; i < 67108864; i++)
+				{
+					vecGO[i].ID *= 2;
+				}
+				break;
+
+			case 2:
+				for (int i = 0; i < 67108864; i++)
+				{
+					vecAlt[i].ID *= 2;
+				}
+				break;
 			}
 			const auto end = std::chrono::high_resolution_clock::now();
 			const auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
@@ -131,7 +174,7 @@ void dae::PlotComponent::GeneratePlotData()
 		{
 			sum += run[i];
 		}
-		m_PlotValuesY.push_back(sum / static_cast<float>(m_NumSamples));
+		m_PlotValuesY.push_back(sum / static_cast<float>(m_NumSamples1));
 	}
 
 
