@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseComponent.h"
+#include <vector>
 
 namespace dae
 {
@@ -11,12 +12,11 @@ namespace dae
 
 		virtual void Render() const override;
 
-		void GenerateData();
+		void GeneratePlotData() const;
 	private:
-		static const size_t data_count = 512;
-		float x_data[data_count] = {};
-		float y_data1[data_count] = {};
-		float y_data2[data_count] = {};
-		float y_data3[data_count] = {};
+		int m_NumSamples;
+		bool m_IsGeneratingData;
+		std::vector<float> m_PlotValuesX;
+		std::vector<float> m_PlotValuesY;
 	};
 }
