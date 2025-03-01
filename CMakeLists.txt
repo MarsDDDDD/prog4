@@ -31,6 +31,7 @@ set(IMGUI_SOURCES
     ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_tables.cpp
     ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/imgui_plot.cpp
     ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
@@ -43,6 +44,8 @@ set(IMGUI_HEADERS
     ${IMGUI_DIR}/imstb_rectpack.h
     ${IMGUI_DIR}/imstb_textedit.h
     ${IMGUI_DIR}/imstb_truetype.h
+    ${IMGUI_DIR}/imgui_plot.h
+
     ${IMGUI_DIR}/backends/imgui_impl_sdl2.h
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.h
 )
@@ -67,7 +70,8 @@ set(MINIGIN_SOURCES
     Minigin/TextureComponent.cpp
     
     Minigin/TransformComponent.cpp
-    Minigin/OrbitComponent.cpp)
+    Minigin/OrbitComponent.cpp
+    Minigin/PlotComponent.cpp)
 
 set(MINIGIN_HEADERS
     Minigin/BaseComponent.h
@@ -88,15 +92,19 @@ set(MINIGIN_HEADERS
     Minigin/TextureComponent.h
     
     Minigin/TransformComponent.h
-    Minigin/OrbitComponent.h)
+    Minigin/OrbitComponent.h
+    Minigin/PlotComponent.h)
 
 # Create executable
 add_executable(Minigin ${MINIGIN_SOURCES} ${MINIGIN_HEADERS} ${IMGUI_SOURCES} ${IMGUI_HEADERS})
 
 # Use target_compile_features for C++20.
 target_compile_features(Minigin PRIVATE cxx_std_20)
-# Set warning level 4 and treat warnings as errors
+# Set warning level 4 and treat warnings as errors for Minigin code, but not for third-party code
 target_compile_options(Minigin PRIVATE /W4 /WX)
+
+# Disable warnings as errors for ImGui files
+set_source_files_properties(${IMGUI_SOURCES} PROPERTIES COMPILE_FLAGS "/WX-")
 
 # Set up third-party libraries
 set(SDL2_DIR "${CMAKE_SOURCE_DIR}/3rdParty/SDL2")
