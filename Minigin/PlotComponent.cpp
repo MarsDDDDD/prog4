@@ -48,7 +48,7 @@ void dae::PlotComponent::RenderExercise1()
 
 
 
-    if (ImGui::Button("Trash the cache"))
+    if (ImGui::Button("Thrash the cache"))
     {
         GeneratePlotData(0);
     }
@@ -93,7 +93,7 @@ void dae::PlotComponent::RenderExercise2()
             m_NumSamples2 = 1;
     }
 
-    if (ImGui::Button("Trash the cache with GameObject3D"))
+    if (ImGui::Button("Thrash the cache with GameObject3D"))
     {
         GeneratePlotData(1);
     }
@@ -121,7 +121,7 @@ void dae::PlotComponent::RenderExercise2()
     }
 
 
-    if (ImGui::Button("Trash the cache with GameObject3DAlt"))
+    if (ImGui::Button("Thrash the cache with GameObject3DAlt"))
     {
         GeneratePlotData(2);
     }
@@ -159,18 +159,18 @@ void dae::PlotComponent::RenderExercise2()
         conf.values.ys_list[0] = m_PlotValuesY_GO.data();  // First series: GameObject3D
         conf.values.ys_list[1] = m_PlotValuesY_Alt.data(); // Second series: GameObject3DAlt
         conf.values.ys_count = 2;  
-        conf.values.count = static_cast<int>(m_PlotValuesX.size());  // Number of data points (same for both).
+        conf.values.count = static_cast<int>(m_PlotValuesX.size()); 
         conf.values.colors = new ImU32[2]{ IM_COL32(255, 0, 0, 255),IM_COL32(0, 255, 0, 255) };
         conf.scale.min = 0; 
         conf.scale.max = maxY;
         conf.tooltip.show = true; 
         conf.tooltip.format = "x=%.0f, y=%.0f us";
-        conf.grid_x.show = true;  // Show grid lines.
+        conf.grid_x.show = true; 
         conf.grid_y.show = true;
-        conf.frame_size = ImVec2(300, 200);  // Larger size for the combined plot.
+        conf.frame_size = ImVec2(300, 200);  
         conf.line_thickness = 2.f;
 
-        ImGui::Plot("Combined Plot", conf); // Call your custom ImGui::Plot
+        ImGui::Plot("Combined Plot", conf); 
 
         delete[] conf.values.ys_list;
         delete[] conf.values.colors;
