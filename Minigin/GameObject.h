@@ -1,105 +1,117 @@
-
 #pragma once
 #include <memory>
 #include <vector>
-#include <typeinfo> // Required for typeid
-#include <typeindex> // Required for type_index
+#include <typeinfo>
+#include <typeindex>
 #include <map>
-//#include "Transform.h"  // No longer needed directly in GameObject
+#include <queue>
 #include "BaseComponent.h"
 #include "TransformComponent.h"
+
 namespace dae
 {
-	class BaseComponent; // Forward declaration
+    class BaseComponent;
 
-	class GameObject final
-	{
-	public:
-		void Update(float deltaTime);
-		void FixedUpdate(float fixedTimeStep);
-		void Render() const;
+    class GameObject final : public std::enable_shared_from_this<GameObject>
+    {
+    public:
 
-		void SetPosition(float x, float y);
+        GameObject();
+        virtual ~GameObject();
+        GameObject(const GameObject& other) = delete;
+        GameObject(GameObject&& other) = delete;
+        GameObject& operator=(const GameObject& other) = delete;
+        GameObject& operator=(GameObject&& other) = delete;
 
-		GameObject() = default;
-		~GameObject();
-		GameObject(const GameObject& other) = delete;
-		GameObject(GameObject&& other) = delete;
-		GameObject& operator=(const GameObject& other) = delete;
-		GameObject& operator=(GameObject&& other) = delete;
+        void Update(float deltaTime);
+        void FixedUpdate(float fixedTimeStep);
+        void Render() const;
 
-		// Component Management
-		template <typename T>
-		void AddComponent(std::shared_ptr<T> component);
+        // Position
+        void SetLocalPosition(float x, float y);
 
-		template <typename T>
-		std::shared_ptr<T> GetComponent() const;
+        // Component Management
+        template <typename T>
+        void AddComponent(std::unique_ptr<T> component);
 
-		template <typename T>
-		bool HasComponent() const;
+        template <typename T>
+        T* GetComponent() const;
 
-		template <typename T>
-		void RemoveComponent();
+        template <typename T>
+        bool HasComponent() const;
 
-		//const Transform& GetTransform() const { return m_transform; } // Add a getter for the Transform
-		//Transform& GetTransform() { return m_transform; } // And a non-const version
-		TransformComponent* GetTransform() { return GetComponent<TransformComponent>().get(); }
-		const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>().get(); }
+        template <typename T>
+        void RemoveComponent();
 
+        TransformComponent* GetTransform() { return GetComponent<TransformComponent>(); }
+        const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>(); }
 
-	private:
-		//Transform m_transform;
-		std::vector<std::shared_ptr<BaseComponent>> m_components; // Store base class pointers
-		std::map<std::type_index, std::shared_ptr<BaseComponent>> m_componentMap;
-	};
+        // Hierarchy
+        void SetParent(GameObject* parent, bool keepWorldPosition = true);
+        std::weak_ptr<GameObject> GetParent() const { return m_parent; }
+        const std::vector<std::shared_ptr<GameObject>>& GetChildren() const { return m_children; }
+        void RemoveAllChildren();
+        void RemoveChild(GameObject* child);
 
-	// Put the template function definitions in the header file.
-	template <typename T>
-	void GameObject::AddComponent(std::shared_ptr<T> component)
-	{
-		// Check if a component of this type already exists
-		if (HasComponent<T>())
-		{
-			return; // Or throw an exception, depending on desired behavior
-		}
+    private:
+        // Component storage
+        std::vector<std::unique_ptr<BaseComponent>> m_components;
+        std::map<std::type_index, BaseComponent*> m_componentMap;
 
-		m_components.push_back(component);
-		m_componentMap[typeid(T)] = component;
-		component->SetGameObject(this); // Important: Set the GameObject pointer
-	}
+        // For deferred removal
+        std::vector<BaseComponent*> m_componentsToRemove;
+        std::queue<std::type_index> m_componentTypesToRemove;
 
-	template <typename T>
-	std::shared_ptr<T> GameObject::GetComponent() const
-	{
-		auto it = m_componentMap.find(typeid(T));
-		if (it != m_componentMap.end()) {
-			// Cast to the requested type using std::dynamic_pointer_cast.  Safer than static_cast.
-			return std::dynamic_pointer_cast<T>(it->second);
-		}
-		return nullptr; // Or consider throwing an exception if it should exist.
-	}
+        // Parent/Child
+        std::weak_ptr<GameObject> m_parent;
+        std::vector<std::shared_ptr<GameObject>> m_children;
 
-	template <typename T>
-	bool GameObject::HasComponent() const
-	{
-		return m_componentMap.count(typeid(T)) > 0;
-	}
+        bool IsDescendant(GameObject* potentialDescendant) const;
+    };
 
-	template <typename T>
-	void GameObject::RemoveComponent()
-	{
-		auto typeIndex = typeid(T);
-		if (m_componentMap.count(typeIndex) > 0)
-		{
-			auto component = m_componentMap[typeIndex];
-			// Remove from the vector
-			auto it = std::find(m_components.begin(), m_components.end(), component);
-			if (it != m_components.end())
-			{
-				m_components.erase(it);
-			}
+    // Template Implementations
+    template <typename T>
+    void GameObject::AddComponent(std::unique_ptr<T> component)
+    {
+        if (HasComponent<T>())
+            return;
 
-			m_componentMap.erase(typeIndex);
-		}
-	}
+        // Store raw pointer in the map before we move it
+        T* rawPtr = component.get();
+        m_componentMap[typeid(T)] = rawPtr;
+
+        // Now move into the vector
+        m_components.push_back(std::move(component));
+    }
+
+    template <typename T>
+    T* GameObject::GetComponent() const
+    {
+        auto it = m_componentMap.find(typeid(T));
+        if (it != m_componentMap.end())
+        {
+            // Use dynamic_cast for proper downcasting
+            return dynamic_cast<T*>(it->second);
+        }
+        return nullptr;
+    }
+
+    template <typename T>
+    bool GameObject::HasComponent() const
+    {
+        return m_componentMap.count(typeid(T)) > 0;
+    }
+
+    template <typename T>
+    void GameObject::RemoveComponent()
+    {
+        auto typeIndex = typeid(T);
+        if (m_componentMap.count(typeIndex) > 0)
+        {
+            auto ptr = m_componentMap[typeid(T)];
+            // Mark for removal
+            m_componentsToRemove.push_back(ptr);
+            m_componentTypesToRemove.push(typeIndex);
+        }
+    }
 }

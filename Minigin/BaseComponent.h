@@ -1,5 +1,4 @@
 #pragma once
-
 namespace dae
 {
 	class GameObject; // Forward declare GameObject
@@ -12,10 +11,11 @@ namespace dae
 		virtual void FixedUpdate(float /*fixedTimeStep*/) {} // Pure virtual
 		virtual void Render() const {} // Pure virtual
 
-		void SetGameObject(GameObject* gameObject) { m_gameObject = gameObject; }
 		GameObject* GetGameObject() const { return m_gameObject; }
-
 	protected:
+		friend class GameObject;
+		explicit BaseComponent(GameObject* pOwner) : m_gameObject(pOwner) {} // Add and make protected
+		//void SetGameObject(GameObject* gameObject) { m_gameObject = gameObject; } // Remove!
 		GameObject* m_gameObject{}; // Pointer to the owning GameObject.
 	};
 }

@@ -8,10 +8,11 @@
 
 namespace dae
 {
+	class GameObject;
 	class TextComponent : public BaseComponent
 	{
 	public:
-		TextComponent(const std::string& text, std::shared_ptr<Font> font, SDL_Color color = { 255, 255, 255, 255 });
+		TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font, SDL_Color color = { 255, 255, 255, 255 }); // Add GameObject
 		~TextComponent() override = default;
 
 		void Update(float deltaTime) override;

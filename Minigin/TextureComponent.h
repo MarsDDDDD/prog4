@@ -7,10 +7,13 @@
 
 namespace dae
 {
+	class GameObject;
 	class TextureComponent : public BaseComponent
 	{
 	public:
-		TextureComponent(std::shared_ptr<Texture2D> texture);
+		TextureComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture); // Add GameObject
+		//TextureComponent(GameObject* gameObject, const std::string& fullPath);
+
 		~TextureComponent() override = default;
 
 		void Render() const override;

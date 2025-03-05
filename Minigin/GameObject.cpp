@@ -1,44 +1,184 @@
-#include <string>
+#include <algorithm>
 #include "GameObject.h"
 #include "BaseComponent.h"
-#include <algorithm>
 #include "TransformComponent.h"
 
-dae::GameObject::~GameObject() = default;
-
-void dae::GameObject::Update(float deltaTime)
+namespace dae
 {
-    for (const auto& component : m_components)
+    GameObject::GameObject()
     {
-        component->Update(deltaTime);
+        // Create TransformComponent with unique ownership
+        auto transform = std::make_unique<TransformComponent>(this);
+        AddComponent(std::move(transform));
     }
-}
 
-void dae::GameObject::FixedUpdate(float fixedTimeStep)
-{
-    for (const auto& component : m_components)
+    GameObject::~GameObject() = default;
+
+    void GameObject::Update(float deltaTime)
     {
-        component->FixedUpdate(fixedTimeStep);
+        // Update all components
+        for (auto& component : m_components)
+        {
+            component->Update(deltaTime);
+        }
+
+        // Apply pending removals
+        for (auto* componentToRemove : m_componentsToRemove)
+        {
+            // Find this pointer in m_components
+            auto it = std::find_if(
+                m_components.begin(),
+                m_components.end(),
+                [componentToRemove](std::unique_ptr<BaseComponent>& c) {
+                    return c.get() == componentToRemove;
+                }
+            );
+
+            // Remove from vector if found
+            if (it != m_components.end())
+            {
+                m_components.erase(it);
+            }
+
+            // Also remove from the lookup map
+            auto typeIndex = m_componentTypesToRemove.front();
+            m_componentMap.erase(typeIndex);
+            m_componentTypesToRemove.pop();
+        }
+        m_componentsToRemove.clear();
+
+        // Update children
+        for (const auto& child : m_children)
+        {
+            child->Update(deltaTime);
+        }
     }
-}
 
-
-void dae::GameObject::Render() const
-{
-    for (const auto& component : m_components)
+    void GameObject::FixedUpdate(float fixedTimeStep)
     {
-        component->Render();
-    }
-}
+        for (auto& component : m_components)
+        {
+            component->FixedUpdate(fixedTimeStep);
+        }
 
-void dae::GameObject::SetPosition(float x, float y)
-{
-    // Get the TransformComponent.  If it doesn't exist, add it.
-    auto transform = GetComponent<TransformComponent>();
-    if (!transform)
-    {
-        transform = std::make_shared<TransformComponent>();
-        AddComponent(transform);
+        for (const auto& child : m_children)
+        {
+            child->FixedUpdate(fixedTimeStep);
+        }
     }
-    transform->SetPosition(x, y, 0.0f); // Use the component's method.
+
+    void GameObject::Render() const
+    {
+        for (auto& component : m_components)
+        {
+            component->Render();
+        }
+
+        for (const auto& child : m_children)
+        {
+            child->Render();
+        }
+    }
+
+    void GameObject::SetLocalPosition(float x, float y)
+    {
+        // Directly call the TransformComponent since it's always present
+        if (auto* transform = GetTransform())
+        {
+            transform->SetLocalPosition(x, y, 0.0f);
+        }
+    }
+
+    void GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
+    {
+        // Prevent self-parenting or cyclical references
+        if (parent == this || (parent && parent->IsDescendant(this)))
+        {
+            return;
+        }
+
+        glm::vec3 originalWorldPosition{};
+        if (keepWorldPosition && GetTransform())
+        {
+            originalWorldPosition = GetTransform()->GetWorldPosition();
+        }
+
+        if (auto currentParent = m_parent.lock())
+        {
+            auto& siblings = currentParent->m_children;
+            const auto it = std::find(siblings.begin(), siblings.end(), shared_from_this());
+            if (it != siblings.end())
+            {
+                siblings.erase(it);
+            }
+        }
+
+        m_parent = parent ? parent->shared_from_this() : nullptr;
+        if (parent)
+        {
+            parent->m_children.push_back(shared_from_this());
+        }
+
+        if (parent && keepWorldPosition)
+        {
+            glm::vec3 parentWorldPosition = parent->GetTransform()->GetWorldPosition();
+            glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
+            GetTransform()->SetLocalPosition(newLocalPosition);
+        }
+        else if (GetTransform())
+        {
+            GetTransform()->SetPositionDirty();
+        }
+    }
+
+    void GameObject::RemoveAllChildren()
+    {
+        for (auto& child : m_children)
+        {
+            child->SetParent(nullptr);
+        }
+        m_children.clear();
+    }
+
+    void GameObject::RemoveChild(GameObject* child)
+    {
+        if (!child || !IsDescendant(child))
+        {
+            return;
+        }
+
+        auto it = std::remove_if(
+            m_children.begin(),
+            m_children.end(),
+            [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; }
+        );
+
+        if (it != m_children.end())
+        {
+            m_children.erase(it, m_children.end());
+        }
+
+        child->m_parent.reset();
+
+        // Recalculate child's local position based on its previous world position
+        if (auto* childTransform = child->GetTransform())
+        {
+            glm::vec3 childWorldPosition = childTransform->GetWorldPosition();
+            childTransform->SetLocalPosition(childWorldPosition);
+        }
+    }
+
+    bool GameObject::IsDescendant(GameObject* potentialDescendant) const
+    {
+        auto current = potentialDescendant->m_parent.lock();
+        while (current)
+        {
+            if (current.get() == this)
+            {
+                return true;
+            }
+            current = current->m_parent.lock();
+        }
+        return false;
+    }
 }

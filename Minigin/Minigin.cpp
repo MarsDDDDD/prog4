@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include <filesystem> 
 
 #include <chrono>
 #include <thread>
@@ -67,7 +68,18 @@ dae::Minigin::Minigin(const std::string &dataPath)
 
 	Renderer::GetInstance().Init(g_window);
 
-	ResourceManager::GetInstance().Init(dataPath);
+
+	// Edit: using absolute path to data folder
+	// Get the path to the executable
+	TCHAR buffer[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, buffer, MAX_PATH);
+	std::filesystem::path executablePath(buffer);
+
+	// Construct the full data path.  Assumes Data is next to the .exe
+	std::filesystem::path absoluteDataPath = executablePath.parent_path() / dataPath;
+	ResourceManager::GetInstance().Init(absoluteDataPath);
+
+	//ResourceManager::GetInstance().Init(dataPath);
 }
 
 dae::Minigin::~Minigin()

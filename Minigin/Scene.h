@@ -30,6 +30,8 @@ namespace dae
 		std::vector < std::shared_ptr<GameObject>> m_objects{};
 
 		static unsigned int m_idCounter;
+
+		std::vector<std::shared_ptr<GameObject>> m_objectsToRemove;
 	};
 
 }

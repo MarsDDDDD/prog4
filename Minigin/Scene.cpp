@@ -18,27 +18,38 @@ void Scene::Add(std::shared_ptr<GameObject> object)
 
 void Scene::Remove(std::shared_ptr<GameObject> object)
 {
-	m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
+	m_objectsToRemove.push_back(object); // Defer removal
 }
 
 void Scene::RemoveAll()
 {
-	m_objects.clear();
-}
-
-void Scene::Update(float deltaTime) // Modified Update method implementation
-{
-	for (auto& object : m_objects)
+	//Mark all objects for removal.  This is safer than clearing m_objects directly
+	for (const auto& object : m_objects)
 	{
-		object->Update(deltaTime); // Pass deltaTime to GameObject::Update
+		Remove(object);
 	}
 }
 
-void Scene::FixedUpdate(float fixedTimeStep) // New FixedUpdate method implementation
+void Scene::Update(float deltaTime)
 {
 	for (auto& object : m_objects)
 	{
-		object->FixedUpdate(fixedTimeStep); // Pass fixedTimeStep to GameObject::FixedUpdate (to be created)
+		object->Update(deltaTime);
+	}
+
+	// Process deferred removals *after* updating
+	for (const auto& object : m_objectsToRemove)
+	{
+		m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
+	}
+	m_objectsToRemove.clear();
+}
+
+void Scene::FixedUpdate(float fixedTimeStep)
+{
+	for (auto& object : m_objects)
+	{
+		object->FixedUpdate(fixedTimeStep);
 	}
 }
 

@@ -3,8 +3,9 @@
 #include "GameObject.h" // Needed for GetTransform
 #include <stdexcept>
 
-dae::TextComponent::TextComponent(const std::string& text, std::shared_ptr<Font> font, SDL_Color color)
-	: m_needsUpdate(true), m_text(text), m_font(std::move(font)), m_color(color), m_textTexture(nullptr)
+dae::TextComponent::TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font, SDL_Color color) // Add GameObject
+	: BaseComponent(pOwner), // Call base class constructor
+	m_needsUpdate(true), m_text(text), m_font(std::move(font)), m_color(color), m_textTexture(nullptr)
 {
 }
 
@@ -22,7 +23,7 @@ void dae::TextComponent::Render() const
 {
 	if (m_textTexture)
 	{
-		const auto& pos = m_gameObject->GetTransform()->GetPosition(); // Correctly uses the TransformComponent
+		const auto& pos = m_gameObject->GetTransform()->GetLocalPosition(); // Correctly uses the TransformComponent
 		dae::Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
 	}
 }

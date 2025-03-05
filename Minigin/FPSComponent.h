@@ -4,22 +4,27 @@
 
 namespace dae
 {
-	class FPSComponent : public BaseComponent
-	{
-	public:
-		FPSComponent();
-		~FPSComponent() override = default;
+    // Forward-declare classes used here
+    class TextComponent;
 
-		void Update(float deltaTime) override;
+    class FPSComponent final : public BaseComponent
+    {
+    public:
+        explicit FPSComponent(GameObject* pOwner);
+        ~FPSComponent() override = default;
 
-		float GetFPS() const;
+        void Update(float deltaTime) override;
+        float GetFPS() const;
 
-	private:
-		float m_fps;
-		float m_timeAccumulator;
-		int m_frameCount;
-		std::vector<float> m_frameTimes; // To store the times of the last 'x' frames
-		static constexpr size_t m_maxSamples = 100;  //Store 100 samples, average those
+    private:
+        float m_fps;
+        float m_timeAccumulator;
+        int m_frameCount;
 
-	};
-}
+        TextComponent* m_textComponent{ nullptr };
+
+        // Buffer of frame times for averaging
+        std::vector<float> m_frameTimes;
+        const size_t m_maxSamples{ 100 };
+    };
+} 
