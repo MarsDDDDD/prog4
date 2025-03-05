@@ -1,4 +1,24 @@
 #include "Command.h"
+#include "InputManager.h"
 
-// Implementation is not needed for this abstract class
-// All the implementation will be in derived classes
+using namespace dae;
+
+void MoveUpCommand::Execute()
+{
+
+}
+
+void MoveDownCommand::Execute()
+{
+
+}
+
+void MoveLeftCommand::Execute()
+{
+
+}
+
+void MoveRightCommand::Execute()
+{
+
+}

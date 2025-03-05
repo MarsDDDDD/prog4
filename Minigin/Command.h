@@ -1,37 +1,85 @@
 #pragma once
-class GameActor;
-class Fire;
+#include "GameObject.h"
 
 namespace dae
 {
 	class Command
 	{
 	public:
+		explicit Command() = default;
 		virtual ~Command() = default;
+		Command(const Command& other) = delete;
+		Command& operator=(const Command& rhs) = delete;
+		Command(Command&& other) = delete;
+		Command& operator=(Command&& rhs) = delete;
+
+
 		virtual void Execute() = 0;
 	};
 
-
-	class GameActorCommand : public Command
+	class MoveUpCommand final : public Command
 	{
-		GameActor* m_actor;
-	protected:
-		GameActor* GetGameActor() const { return m_actor; }
 	public:
-		GameActorCommand(GameActor* actor);
-		virtual ~GameActorCommand();
+		explicit MoveUpCommand(GameObject* pGameObject, float speed)
+			:m_pGameObject{ pGameObject }
+			, m_Speed{ speed }
+		{
+		}
+
+		void Execute() override;
+	private:
+		GameObject* m_pGameObject{};
+		float m_Speed{};
 	};
 
-	class Fire : public GameActorCommand
+	class MoveDownCommand final : public Command
 	{
 	public:
-		void Execute() override
+		explicit MoveDownCommand(GameObject* pGameObject, float speed)
+			:m_pGameObject{ pGameObject }
+			, m_Speed{ speed }
 		{
-			//GetGameActor()->Fire();
-			// additional code is possible too, of course
 		}
+
+		void Execute() override;
+	private:
+		GameObject* m_pGameObject{};
+		float m_Speed{};
+	};
+
+	class MoveLeftCommand final : public Command
+	{
+	public:
+		explicit MoveLeftCommand(GameObject* pGameObject, float speed)
+			:m_pGameObject{ pGameObject }
+			, m_Speed{ speed }
+		{
+		}
+
+		void Execute() override;
+	private:
+		GameObject* m_pGameObject{};
+		float m_Speed{};
+	};
+
+	class MoveRightCommand final : public Command
+	{
+	public:
+		explicit MoveRightCommand(GameObject* pGameObject, float speed)
+			:m_pGameObject{ pGameObject }
+			, m_Speed{ speed }
+		{
+		}
+
+		void Execute() override;
+	private:
+		GameObject* m_pGameObject{};
+		float m_Speed{};
 	};
 }
+
+
+
 // These commands need to be registered with the Input manager
 // The input manager keeps track of all active commands
 // Checks if the input for the command has been executed by the user
