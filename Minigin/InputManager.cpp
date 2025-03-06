@@ -40,8 +40,11 @@ bool InputManager::ProcessInput()
 				else if (e.type == SDL_KEYUP)
 				{
 					std::cout << "Release" << std::endl;
-					mapPair.second->Execute();
 					m_HeldKeys.erase(mapPair.first.key);
+					if (mapPair.first.type == InputType::OnRelease)
+					{
+						mapPair.second->Execute();
+					}
 				}
 			}
 		}
