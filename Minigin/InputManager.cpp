@@ -30,13 +30,18 @@ bool InputManager::ProcessInput()
 				{
 					if (mapPair.first.type == InputType::OnPress)
 					{
-						mapPair.second->Execute();
-						std::cout << "onpress keydown" << std::endl;
+						if (m_HeldKeys.find(mapPair.first.key) == m_HeldKeys.end())
+						{
+							mapPair.second->Execute();
+							m_HeldKeys.insert(mapPair.first.key);
+						}
 					}
 				}
-				else if (mapPair.first.type == InputType::OnRelease && e.type == SDL_KEYUP)
+				else if (e.type == SDL_KEYUP)
 				{
+					std::cout << "Release" << std::endl;
 					mapPair.second->Execute();
+					m_HeldKeys.erase(mapPair.first.key);
 				}
 			}
 		}
@@ -67,7 +72,12 @@ bool InputManager::ProcessInput()
 			{
 				if (mapPair.first.type == InputType::OnPress && controller->IsDown(mapPair.first.button))
 				{
-					mapPair.second->Execute();
+					ControllerButtonState buttonState{ mapPair.first.controllerID, mapPair.first.button };
+					if (m_HeldButtons.find(buttonState) == m_HeldButtons.end())
+					{
+						mapPair.second->Execute();
+						m_HeldButtons.insert(buttonState);
+					}
 				}
 				else if (mapPair.first.type == InputType::OnHold && controller->IsPressed(mapPair.first.button))
 				{
@@ -76,6 +86,8 @@ bool InputManager::ProcessInput()
 				else if (mapPair.first.type == InputType::OnRelease && controller->IsUp(mapPair.first.button))
 				{
 					mapPair.second->Execute();
+					ControllerButtonState buttonState{ mapPair.first.controllerID, mapPair.first.button };
+					m_HeldButtons.erase(buttonState);
 				}
 			}
 		}

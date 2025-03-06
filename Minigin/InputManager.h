@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <memory>
+#include <set>
 
 #include "Singleton.h"
 #include "XBoxController.h"
@@ -65,5 +66,21 @@ namespace dae
 		std::vector<std::unique_ptr<XBoxController>> m_pControllers{};
 
 		std::map<InputDataKeyboard, std::unique_ptr<Command>> m_KeyboardActionMap{};
+        
+		// Track keys that are currently held down to prevent repeated OnPress events
+		std::set<unsigned int> m_HeldKeys{};
+        
+		// Track controller buttons that are currently held down
+		struct ControllerButtonState {
+			unsigned int controllerID{};
+			XBoxController::XBoxButton button{};
+            
+			bool operator<(const ControllerButtonState& other) const {
+				if (controllerID < other.controllerID) return true;
+				if (controllerID > other.controllerID) return false;
+				return button < other.button;
+			}
+		};
+		std::set<ControllerButtonState> m_HeldButtons{};
 	};
 }
