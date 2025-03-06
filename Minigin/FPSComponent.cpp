@@ -22,7 +22,7 @@ namespace dae
         m_frameCount++;
 
         // Add the new frame time
-        m_frameTimes.push_back(deltaTime);
+        m_frameTimes.emplace_back(deltaTime);
         if (m_frameTimes.size() > m_maxSamples)
         {
             m_frameTimes.erase(m_frameTimes.begin());

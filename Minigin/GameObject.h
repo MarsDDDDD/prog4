@@ -110,7 +110,7 @@ namespace dae
         {
             auto ptr = m_ComponentMap[typeid(T)];
             // Mark for removal
-            m_pComponentsToRemove.push_back(ptr);
+            m_pComponentsToRemove.emplace_back(ptr);
             m_ComponentTypesToRemove.push(typeIndex);
         }
     }

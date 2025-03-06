@@ -123,7 +123,6 @@ void InputManager::AddControllerCommand(XBoxController::XBoxButton button, unsig
 
 	if (doesControllerExist == false)
 	{
-		//make new controller
 		m_pControllers.emplace_back(std::make_unique<XBoxController>(controllerID));
 	}
 

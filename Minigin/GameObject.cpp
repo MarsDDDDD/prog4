@@ -116,7 +116,7 @@ namespace dae
         m_parent = parent ? parent->shared_from_this() : nullptr;
         if (parent)
         {
-            parent->m_Children.push_back(shared_from_this());
+            parent->m_Children.emplace_back(shared_from_this());
         }
 
         if (parent && keepWorldPosition)
