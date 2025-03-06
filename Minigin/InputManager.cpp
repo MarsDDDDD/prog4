@@ -68,7 +68,7 @@ bool InputManager::ProcessInput()
 
 		for (auto& mapPair : m_ControllerActionMap)
 		{
-			if (mapPair.first.controllerID == controller->GetIdx())
+			if (mapPair.first.controllerID == controller->GetIndex())
 			{
 				if (mapPair.first.type == InputType::OnPress && controller->IsDown(mapPair.first.button))
 				{
@@ -96,11 +96,11 @@ bool InputManager::ProcessInput()
 	return true;
 }
 
-XBoxController* InputManager::GetController(unsigned int controllerIdx)
+XBoxController* InputManager::GetController(unsigned int controllerIndex)
 {
 	for (auto& controller : m_pControllers)
 	{
-		if (controller->GetIdx() == controllerIdx)
+		if (controller->GetIndex() == controllerIndex)
 		{
 			return controller.get();
 		}
@@ -114,7 +114,7 @@ void InputManager::AddControllerCommand(XBoxController::XBoxButton button, unsig
 	bool doesControllerExist{ false };
 	for (const auto& controller : m_pControllers)
 	{
-		if (controller->GetIdx() == controllerID)
+		if (controller->GetIndex() == controllerID)
 		{
 			doesControllerExist = true;
 			break;
@@ -124,17 +124,15 @@ void InputManager::AddControllerCommand(XBoxController::XBoxButton button, unsig
 	if (doesControllerExist == false)
 	{
 		//make new controller
-		m_pControllers.push_back(std::make_unique<XBoxController>(controllerID));
+		m_pControllers.emplace_back(std::make_unique<XBoxController>(controllerID));
 	}
 
-	//make the action and add it to the map
 	InputDataController inputData{ controllerID, button, type };
 	m_ControllerActionMap[inputData] = std::move(pCommand);
 }
 
-void InputManager::AddKeyboardCommand(unsigned int keyboardKey, InputType type, std::unique_ptr<Command> pCommand)
+void InputManager::AddKeyboardCommand(unsigned int key, InputType type, std::unique_ptr<Command> pCommand)
 {
-	//make the action and add it to the map
-	InputDataKeyboard inputData{ keyboardKey, type };
+	InputDataKeyboard inputData{ key, type };
 	m_KeyboardActionMap[inputData] = std::move(pCommand);
 }

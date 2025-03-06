@@ -81,7 +81,7 @@ namespace dae
         m_ComponentMap[typeid(T)] = rawPtr;
 
         // Now move into the vector
-        m_Components.push_back(std::move(component));
+        m_Components.emplace_back(std::move(component));
     }
 
     template <typename T>

@@ -15,7 +15,7 @@ namespace dae
 	public:
 		bool ProcessInput();
 
-		XBoxController* GetController(unsigned int controllerIdx);
+		XBoxController* GetController(unsigned int controllerIndex);
 
 		enum class InputType
 		{

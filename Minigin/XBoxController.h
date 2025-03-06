@@ -42,7 +42,7 @@ namespace dae
 
 		glm::vec2 GetLeftStickPos() const;
 
-		unsigned int GetIdx() const { return m_ControllerIndex; }
+		unsigned int GetIndex() const { return m_ControllerIndex; }
 
 		explicit XBoxController(unsigned int controllerIndex);
 		~XBoxController();
