@@ -13,26 +13,13 @@ dae::TextureComponent::TextureComponent(GameObject* pOwner, std::shared_ptr<Text
 		m_dimensions.y = static_cast<float>(size.y);
 	}
 }
-//dae::TextureComponent::TextureComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture) // Add GameObject*
-//	: BaseComponent(pOwner), // Call base class constructor
-//	//m_texture(std::move(texture))
-//{
-//	m_Texture = ResourceManager::GetInstance().LoadTexture(fullPath);
-//
-//	if (m_texture)
-//	{
-//		glm::ivec2 size = m_texture->GetSize();
-//		m_dimensions.x = static_cast<float>(size.x);
-//		m_dimensions.y = static_cast<float>(size.y);
-//	}
-//}
 
 
 void dae::TextureComponent::Render() const
 {
 	if (m_texture)
 	{
-		const auto& pos = m_gameObject->GetTransform()->GetWorldPosition(); // Correctly uses the TransformComponent
+		const auto& pos = m_pGameObject->GetTransform()->GetWorldPosition(); // Correctly uses the TransformComponent
 		if (m_dimensions.x != 0 && m_dimensions.y != 0)
 		{
 			dae::Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y, m_dimensions.x, m_dimensions.y);

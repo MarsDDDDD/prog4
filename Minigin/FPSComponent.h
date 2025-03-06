@@ -21,7 +21,7 @@ namespace dae
         float m_timeAccumulator;
         int m_frameCount;
 
-        TextComponent* m_textComponent{ nullptr };
+        TextComponent* m_pTextComponent{ nullptr };
 
         // Buffer of frame times for averaging
         std::vector<float> m_frameTimes;

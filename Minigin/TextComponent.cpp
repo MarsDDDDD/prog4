@@ -5,7 +5,7 @@
 
 dae::TextComponent::TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font, SDL_Color color) // Add GameObject
 	: BaseComponent(pOwner), // Call base class constructor
-	m_needsUpdate(true), m_text(text), m_font(std::move(font)), m_color(color), m_textTexture(nullptr)
+	m_needsUpdate(true), m_text(text), m_font(std::move(font)), m_Color(color), m_textTexture(nullptr)
 {
 }
 
@@ -23,7 +23,7 @@ void dae::TextComponent::Render() const
 {
 	if (m_textTexture)
 	{
-		const auto& pos = m_gameObject->GetTransform()->GetLocalPosition(); // Correctly uses the TransformComponent
+		const auto& pos = m_pGameObject->GetTransform()->GetLocalPosition(); // Correctly uses the TransformComponent
 		dae::Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
 	}
 }
@@ -35,7 +35,7 @@ void dae::TextComponent::SetText(const std::string& text)
 
 void dae::TextComponent::SetColor(SDL_Color color)
 {
-	m_color = color;
+	m_Color = color;
 	m_needsUpdate = true;
 }
 void dae::TextComponent::SetFont(std::shared_ptr<Font> font)
@@ -46,7 +46,7 @@ void dae::TextComponent::SetFont(std::shared_ptr<Font> font)
 
 void dae::TextComponent::CreateTexture()
 {
-	const auto surf = TTF_RenderText_Blended(m_font->GetFont(), m_text.c_str(), m_color);
+	const auto surf = TTF_RenderText_Blended(m_font->GetFont(), m_text.c_str(), m_Color);
 	if (surf == nullptr)
 	{
 		throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());

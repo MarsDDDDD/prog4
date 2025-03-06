@@ -3,7 +3,7 @@
 
 void dae::SceneManager::Update(float deltaTime) // Modified Update method implementation
 {
-	for (auto& scene : m_scenes)
+	for (auto& scene : m_pScenes)
 	{
 		scene->Update(deltaTime); // Pass deltaTime to Scene::Update
 	}
@@ -11,7 +11,7 @@ void dae::SceneManager::Update(float deltaTime) // Modified Update method implem
 
 void dae::SceneManager::FixedUpdate(float fixedTimeStep) // New FixedUpdate method implementation
 {
-	for (auto& scene : m_scenes)
+	for (auto& scene : m_pScenes)
 	{
 		scene->FixedUpdate(fixedTimeStep); // Pass fixedTimeStep to Scene::FixedUpdate
 	}
@@ -19,7 +19,7 @@ void dae::SceneManager::FixedUpdate(float fixedTimeStep) // New FixedUpdate meth
 
 void dae::SceneManager::Render()
 {
-	for (const auto& scene : m_scenes)
+	for (const auto& scene : m_pScenes)
 	{
 		scene->Render();
 	}
@@ -28,6 +28,6 @@ void dae::SceneManager::Render()
 dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
 {
 	const auto& scene = std::shared_ptr<Scene>(new Scene(name));
-	m_scenes.push_back(scene);
+	m_pScenes.push_back(scene);
 	return *scene;
 }

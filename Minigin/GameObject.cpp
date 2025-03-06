@@ -17,38 +17,38 @@ namespace dae
     void GameObject::Update(float deltaTime)
     {
         // Update all components
-        for (auto& component : m_components)
+        for (auto& component : m_Components)
         {
             component->Update(deltaTime);
         }
 
         // Apply pending removals
-        for (auto* componentToRemove : m_componentsToRemove)
+        for (auto* componentToRemove : m_pComponentsToRemove)
         {
-            // Find this pointer in m_components
+            // Find this pointer in m_Components
             auto it = std::find_if(
-                m_components.begin(),
-                m_components.end(),
+                m_Components.begin(),
+                m_Components.end(),
                 [componentToRemove](std::unique_ptr<BaseComponent>& c) {
                     return c.get() == componentToRemove;
                 }
             );
 
             // Remove from vector if found
-            if (it != m_components.end())
+            if (it != m_Components.end())
             {
-                m_components.erase(it);
+                m_Components.erase(it);
             }
 
             // Also remove from the lookup map
-            auto typeIndex = m_componentTypesToRemove.front();
-            m_componentMap.erase(typeIndex);
-            m_componentTypesToRemove.pop();
+            auto typeIndex = m_ComponentTypesToRemove.front();
+            m_ComponentMap.erase(typeIndex);
+            m_ComponentTypesToRemove.pop();
         }
-        m_componentsToRemove.clear();
+        m_pComponentsToRemove.clear();
 
         // Update children
-        for (const auto& child : m_children)
+        for (const auto& child : m_Children)
         {
             child->Update(deltaTime);
         }
@@ -56,12 +56,12 @@ namespace dae
 
     void GameObject::FixedUpdate(float fixedTimeStep)
     {
-        for (auto& component : m_components)
+        for (auto& component : m_Components)
         {
             component->FixedUpdate(fixedTimeStep);
         }
 
-        for (const auto& child : m_children)
+        for (const auto& child : m_Children)
         {
             child->FixedUpdate(fixedTimeStep);
         }
@@ -69,12 +69,12 @@ namespace dae
 
     void GameObject::Render() const
     {
-        for (auto& component : m_components)
+        for (auto& component : m_Components)
         {
             component->Render();
         }
 
-        for (const auto& child : m_children)
+        for (const auto& child : m_Children)
         {
             child->Render();
         }
@@ -105,7 +105,7 @@ namespace dae
 
         if (auto currentParent = m_parent.lock())
         {
-            auto& siblings = currentParent->m_children;
+            auto& siblings = currentParent->m_Children;
             const auto it = std::find(siblings.begin(), siblings.end(), shared_from_this());
             if (it != siblings.end())
             {
@@ -116,7 +116,7 @@ namespace dae
         m_parent = parent ? parent->shared_from_this() : nullptr;
         if (parent)
         {
-            parent->m_children.push_back(shared_from_this());
+            parent->m_Children.push_back(shared_from_this());
         }
 
         if (parent && keepWorldPosition)
@@ -133,11 +133,11 @@ namespace dae
 
     void GameObject::RemoveAllChildren()
     {
-        for (auto& child : m_children)
+        for (auto& child : m_Children)
         {
             child->SetParent(nullptr);
         }
-        m_children.clear();
+        m_Children.clear();
     }
 
     void GameObject::RemoveChild(GameObject* child)
@@ -148,14 +148,14 @@ namespace dae
         }
 
         auto it = std::remove_if(
-            m_children.begin(),
-            m_children.end(),
+            m_Children.begin(),
+            m_Children.end(),
             [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; }
         );
 
-        if (it != m_children.end())
+        if (it != m_Children.end())
         {
-            m_children.erase(it, m_children.end());
+            m_Children.erase(it, m_Children.end());
         }
 
         child->m_parent.reset();

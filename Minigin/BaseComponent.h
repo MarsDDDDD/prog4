@@ -11,11 +11,11 @@ namespace dae
 		virtual void FixedUpdate(float /*fixedTimeStep*/) {} // Pure virtual
 		virtual void Render() const {} // Pure virtual
 
-		GameObject* GetGameObject() const { return m_gameObject; }
+		GameObject* GetGameObject() const { return m_pGameObject; }
 	protected:
 		friend class GameObject;
-		explicit BaseComponent(GameObject* pOwner) : m_gameObject(pOwner) {} // Add and make protected
-		//void SetGameObject(GameObject* gameObject) { m_gameObject = gameObject; } // Remove!
-		GameObject* m_gameObject{}; // Pointer to the owning GameObject.
+		explicit BaseComponent(GameObject* pOwner) : m_pGameObject(pOwner) {} // Add and make protected
+		//void SetGameObject(GameObject* gameObject) { m_pGameObject = gameObject; } // Remove!
+		GameObject* m_pGameObject{}; // Pointer to the owning GameObject.
 	};
 }
