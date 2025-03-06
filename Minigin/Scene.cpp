@@ -18,7 +18,7 @@ void Scene::Add(std::shared_ptr<GameObject> object)
 
 void Scene::Remove(std::shared_ptr<GameObject> object)
 {
-	m_objectsToRemove.push_back(object); // Defer removal
+	m_objectsToRemove.emplace_back(object); // Defer removal
 }
 
 void Scene::RemoveAll()

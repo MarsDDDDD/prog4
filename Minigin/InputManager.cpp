@@ -1,23 +1,140 @@
 #include <SDL.h>
 #include "InputManager.h"
-#include "imgui.h"
-#include <backends/imgui_impl_sdl2.h>
-bool dae::InputManager::ProcessInput()
+#include <iostream>
+
+using namespace dae;
+
+bool InputManager::ProcessInput()
 {
+	//Keyboard part
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT) {
+		if (e.type == SDL_QUIT) 
+		{
 			return false;
 		}
-		if (e.type == SDL_KEYDOWN) {
-			
+		switch (e.type)
+		{
+		case SDL_QUIT:
+			return false;
+		case SDL_KEYDOWN:
+			break;
 		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			
+
+		//Keyboard OnPress and OnRelease
+		for (auto& mapPair : m_KeyboardActionMap)
+		{
+			if (unsigned int(e.key.keysym.sym) == mapPair.first.key)
+			{
+				if (e.type == SDL_KEYDOWN)
+				{
+					if (mapPair.first.type == InputType::OnPress)
+					{
+						if (m_HeldKeys.find(mapPair.first.key) == m_HeldKeys.end())
+						{
+							mapPair.second->Execute();
+							m_HeldKeys.insert(mapPair.first.key);
+						}
+					}
+				}
+				else if (e.type == SDL_KEYUP)
+				{
+					std::cout << "Release" << std::endl;
+					m_HeldKeys.erase(mapPair.first.key);
+					if (mapPair.first.type == InputType::OnRelease)
+					{
+						mapPair.second->Execute();
+					}
+				}
+			}
 		}
-		// process event for IMGUI
-		ImGui_ImplSDL2_ProcessEvent(&e);
+	}
+
+	//Keyboard OnHold
+	const Uint8* state = SDL_GetKeyboardState(NULL);
+	for (auto& mapPair : m_KeyboardActionMap)
+	{
+		if (mapPair.first.type == InputType::OnHold)
+		{
+			if (state[SDL_GetScancodeFromKey(mapPair.first.key)])
+			{
+				mapPair.second->Execute();
+			}
+		}
+	}
+
+
+	// Controller
+	for (auto& controller : m_pControllers)
+	{
+		controller->Update();
+
+		for (auto& mapPair : m_ControllerActionMap)
+		{
+			if (mapPair.first.controllerID == controller->GetIndex())
+			{
+				if (mapPair.first.type == InputType::OnPress && controller->IsDown(mapPair.first.button))
+				{
+					ControllerButtonState buttonState{ mapPair.first.controllerID, mapPair.first.button };
+					if (m_HeldButtons.find(buttonState) == m_HeldButtons.end())
+					{
+						mapPair.second->Execute();
+						m_HeldButtons.insert(buttonState);
+					}
+				}
+				else if (mapPair.first.type == InputType::OnHold && controller->IsPressed(mapPair.first.button))
+				{
+					mapPair.second->Execute();
+				}
+				else if (mapPair.first.type == InputType::OnRelease && controller->IsUp(mapPair.first.button))
+				{
+					mapPair.second->Execute();
+					ControllerButtonState buttonState{ mapPair.first.controllerID, mapPair.first.button };
+					m_HeldButtons.erase(buttonState);
+				}
+			}
+		}
 	}
 
 	return true;
+}
+
+XBoxController* InputManager::GetController(unsigned int controllerIndex)
+{
+	for (auto& controller : m_pControllers)
+	{
+		if (controller->GetIndex() == controllerIndex)
+		{
+			return controller.get();
+		}
+	}
+	return nullptr;
+}
+
+
+void InputManager::AddControllerCommand(XBoxController::XBoxButton button, unsigned int controllerID, InputType type, std::unique_ptr<Command> pCommand)
+{
+	bool doesControllerExist{ false };
+	for (const auto& controller : m_pControllers)
+	{
+		if (controller->GetIndex() == controllerID)
+		{
+			doesControllerExist = true;
+			break;
+		}
+	}
+
+	if (doesControllerExist == false)
+	{
+		m_pControllers.emplace_back(std::make_unique<XBoxController>(controllerID));
+	}
+
+	InputDataController inputData{ controllerID, button, type };
+	m_ControllerActionMap[inputData] = std::move(pCommand);
+}
+
+void InputManager::AddKeyboardCommand(unsigned int key, InputType type, std::unique_ptr<Command> pCommand)
+{
+	InputDataKeyboard inputData{ key, type };
+	m_KeyboardActionMap[inputData] = std::move(pCommand);
 }

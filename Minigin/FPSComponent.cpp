@@ -22,7 +22,7 @@ namespace dae
         m_frameCount++;
 
         // Add the new frame time
-        m_frameTimes.push_back(deltaTime);
+        m_frameTimes.emplace_back(deltaTime);
         if (m_frameTimes.size() > m_maxSamples)
         {
             m_frameTimes.erase(m_frameTimes.begin());
@@ -49,23 +49,23 @@ namespace dae
             }
 
             // Update the text component
-            if (m_textComponent)
+            if (m_pTextComponent)
             {
                 // We already have a pointer, so update it
                 std::stringstream stream;
                 stream << std::fixed << std::setprecision(1) << m_fps;
-                m_textComponent->SetText(stream.str() + " FPS");
+                m_pTextComponent->SetText(stream.str() + " FPS");
             }
             else
             {
                 // Try retrieving a TextComponent again
-                auto textComp = m_gameObject->GetComponent<TextComponent>();
+                auto textComp = m_pGameObject->GetComponent<TextComponent>();
                 if (textComp)
                 {
-                    m_textComponent = textComp;
+                    m_pTextComponent = textComp;
                     std::stringstream stream;
                     stream << std::fixed << std::setprecision(1) << m_fps;
-                    m_textComponent->SetText(stream.str() + " FPS");
+                    m_pTextComponent->SetText(stream.str() + " FPS");
                 }
             }
 
