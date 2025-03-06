@@ -2,7 +2,7 @@
 #include "Renderer.h"
 #include "SceneManager.h"
 #include "Texture2D.h"
-
+//
 int GetOpenGLDriverIndex()
 {
 	auto openglIndex = -1;
