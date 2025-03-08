@@ -6,7 +6,7 @@ using namespace dae;
 
 bool InputManager::ProcessInput(float deltaTime)
 {
-	//Keyboard part
+	//Unused
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) 
