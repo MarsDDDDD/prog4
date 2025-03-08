@@ -1,4 +1,3 @@
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <XInput.h>
 #pragma comment(lib, "xinput.lib")
@@ -15,11 +14,11 @@ class XBoxController::XBoxControllerImpl final
 	WORD buttonsPressedThisFrame;
 	WORD buttonsReleasedThisFrame;
 
-	int _controllerIndex;
+	int m_ControllerIndex;
 
 public:
 	XBoxControllerImpl(int controllerIndex)
-		:_controllerIndex{ controllerIndex }
+		:m_ControllerIndex{ controllerIndex }
 	{
 		ZeroMemory(&previousState, sizeof(XINPUT_STATE));
 		ZeroMemory(&currentState, sizeof(XINPUT_STATE));
@@ -29,7 +28,7 @@ public:
 	{
 		CopyMemory(&previousState, &currentState, sizeof(XINPUT_STATE));
 		ZeroMemory(&currentState, sizeof(XINPUT_STATE));
-		XInputGetState(_controllerIndex, &currentState);
+		XInputGetState(m_ControllerIndex, &currentState);
 
 		auto buttonChanges = currentState.Gamepad.wButtons ^ previousState.Gamepad.wButtons;
 		buttonsPressedThisFrame = buttonChanges & currentState.Gamepad.wButtons;
