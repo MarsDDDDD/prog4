@@ -4,7 +4,7 @@
 
 using namespace dae;
 
-bool InputManager::ProcessInput()
+bool InputManager::ProcessInput(float deltaTime)
 {
 	//Keyboard part
 	SDL_Event e;
@@ -32,7 +32,7 @@ bool InputManager::ProcessInput()
 					{
 						if (m_HeldKeys.find(mapPair.first.key) == m_HeldKeys.end())
 						{
-							mapPair.second->Execute();
+							mapPair.second->Execute(deltaTime);
 							m_HeldKeys.insert(mapPair.first.key);
 						}
 					}
@@ -43,7 +43,7 @@ bool InputManager::ProcessInput()
 					m_HeldKeys.erase(mapPair.first.key);
 					if (mapPair.first.type == InputType::OnRelease)
 					{
-						mapPair.second->Execute();
+						mapPair.second->Execute(deltaTime);
 					}
 				}
 			}
@@ -58,7 +58,7 @@ bool InputManager::ProcessInput()
 		{
 			if (state[SDL_GetScancodeFromKey(mapPair.first.key)])
 			{
-				mapPair.second->Execute();
+				mapPair.second->Execute(deltaTime);
 			}
 		}
 	}
@@ -78,17 +78,17 @@ bool InputManager::ProcessInput()
 					ControllerButtonState buttonState{ mapPair.first.controllerID, mapPair.first.button };
 					if (m_HeldButtons.find(buttonState) == m_HeldButtons.end())
 					{
-						mapPair.second->Execute();
+						mapPair.second->Execute(deltaTime);
 						m_HeldButtons.insert(buttonState);
 					}
 				}
 				else if (mapPair.first.type == InputType::OnHold && controller->IsPressed(mapPair.first.button))
 				{
-					mapPair.second->Execute();
+					mapPair.second->Execute(deltaTime);
 				}
 				else if (mapPair.first.type == InputType::OnRelease && controller->IsUp(mapPair.first.button))
 				{
-					mapPair.second->Execute();
+					mapPair.second->Execute(deltaTime);
 					ControllerButtonState buttonState{ mapPair.first.controllerID, mapPair.first.button };
 					m_HeldButtons.erase(buttonState);
 				}

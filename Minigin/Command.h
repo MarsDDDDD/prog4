@@ -14,7 +14,7 @@ namespace dae
 		Command& operator=(Command&& rhs) = delete;
 
 
-		virtual void Execute() = 0;
+		virtual void Execute(float deltaTime = 0.f) = 0;
 	};
 
 	class MoveUpCommand final : public Command
@@ -26,7 +26,7 @@ namespace dae
 		{
 		}
 
-		void Execute() override;
+		void Execute(float deltaTime) override;
 	private:
 		GameObject* m_pGameObject{};
 		float m_Speed{};
@@ -41,7 +41,7 @@ namespace dae
 		{
 		}
 
-		void Execute() override;
+		void Execute(float deltaTime) override;
 	private:
 		GameObject* m_pGameObject{};
 		float m_Speed{};
@@ -56,7 +56,7 @@ namespace dae
 		{
 		}
 
-		void Execute() override;
+		void Execute(float deltaTime) override;
 	private:
 		GameObject* m_pGameObject{};
 		float m_Speed{};
@@ -71,7 +71,7 @@ namespace dae
 		{
 		}
 
-		void Execute() override;
+		void Execute(float deltaTime) override;
 	private:
 		GameObject* m_pGameObject{};
 		float m_Speed{};

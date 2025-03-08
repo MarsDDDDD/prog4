@@ -13,8 +13,7 @@ namespace dae
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
-		bool ProcessInput();
-
+		bool ProcessInput(float deltaTime);
 		XBoxController* GetController(unsigned int controllerIndex);
 
 		enum class InputType

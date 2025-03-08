@@ -104,7 +104,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		lag += deltaTime;
 
 
-		doContinue = input.ProcessInput();
+		doContinue = input.ProcessInput(deltaTime);
 
 		// Fixed update loop (for physics and other things that need consistent updates).
 		while (lag >= fixedTimeStep)

@@ -1,8 +1,12 @@
 #include "SceneManager.h"
 #include "Scene.h"
+#include "InputManager.h"
 
 void dae::SceneManager::Update(float deltaTime) // Modified Update method implementation
 {
+
+	InputManager::GetInstance().ProcessInput(deltaTime);
+
 	for (auto& scene : m_pScenes)
 	{
 		scene->Update(deltaTime); // Pass deltaTime to Scene::Update
