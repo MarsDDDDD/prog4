@@ -78,8 +78,6 @@ namespace dae
 	};
 }
 
-
-
 // These commands need to be registered with the Input manager
 // The input manager keeps track of all active commands
 // Checks if the input for the command has been executed by the user
