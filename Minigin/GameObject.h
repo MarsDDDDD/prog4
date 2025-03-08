@@ -74,7 +74,9 @@ namespace dae
     void GameObject::AddComponent(std::unique_ptr<T> component)
     {
         if (HasComponent<T>())
+        {
             return;
+        }
 
         // Store raw pointer in the map before we move it
         T* rawPtr = component.get();
