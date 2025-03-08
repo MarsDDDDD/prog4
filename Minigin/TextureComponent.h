@@ -23,7 +23,7 @@ namespace dae
 		const glm::vec2& GetDimensions() const { return m_dimensions; };
 
 	private:
-		std::shared_ptr<Texture2D> m_texture;
+		std::shared_ptr<Texture2D> m_texture; // Should stay as shared_ptr
 		glm::vec2 m_dimensions{};
 	};
 }

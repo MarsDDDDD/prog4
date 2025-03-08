@@ -37,9 +37,6 @@ namespace dae
 		bool IsUp(XBoxButton button) const;
 		bool IsPressed(XBoxButton button) const;
 
-		//bool IsDownThisFrame(unsigned int button) const;
-		//bool IsUpThisFrame(unsigned int button) const;
-
 		glm::vec2 GetLeftStickPos() const;
 
 		unsigned int GetIndex() const { return m_ControllerIndex; }
