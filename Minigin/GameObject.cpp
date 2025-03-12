@@ -106,7 +106,8 @@ namespace dae
         if (auto currentParent = m_parent.lock())
         {
             auto& siblings = currentParent->m_Children;
-            const auto it = std::find(siblings.begin(), siblings.end(), shared_from_this());
+            const auto it = std::find_if(siblings.begin(), siblings.end(),
+                [this](const std::unique_ptr<GameObject>& obj) { return obj.get() == this; });
             if (it != siblings.end())
             {
                 siblings.erase(it);
@@ -116,7 +117,7 @@ namespace dae
         m_parent = parent ? parent->shared_from_this() : nullptr;
         if (parent)
         {
-            parent->m_Children.emplace_back(shared_from_this());
+            parent->m_Children.emplace_back(this);
         }
 
         if (parent && keepWorldPosition)
@@ -147,11 +148,8 @@ namespace dae
             return;
         }
 
-        auto it = std::remove_if(
-            m_Children.begin(),
-            m_Children.end(),
-            [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; }
-        );
+        auto it = std::remove_if(m_Children.begin(), m_Children.end(),
+            [child](const std::unique_ptr<GameObject>& obj) { return obj.get() == child; });
 
         if (it != m_Children.end())
         {
@@ -170,6 +168,10 @@ namespace dae
 
     bool GameObject::IsDescendant(GameObject* potentialDescendant) const
     {
+        if (!potentialDescendant)
+        {
+            return false;
+        }
         auto current = potentialDescendant->m_parent.lock();
         while (current)
         {

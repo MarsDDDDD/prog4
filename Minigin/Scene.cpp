@@ -11,12 +11,12 @@ Scene::Scene(const std::string& name) : m_name(name) {}
 
 Scene::~Scene() = default;
 
-void Scene::Add(std::shared_ptr<GameObject> object)
+void Scene::Add(std::unique_ptr<GameObject> object)
 {
 	m_objects.emplace_back(std::move(object));
 }
 
-void Scene::Remove(std::shared_ptr<GameObject> object)
+void Scene::Remove(GameObject* object)
 {
 	m_objectsToRemove.emplace_back(object); // Defer removal
 }
@@ -26,7 +26,7 @@ void Scene::RemoveAll()
 	//Mark all objects for removal.  This is safer than clearing m_objects directly
 	for (const auto& object : m_objects)
 	{
-		Remove(object);
+		Remove(object.get());
 	}
 }
 
@@ -40,7 +40,8 @@ void Scene::Update(float deltaTime)
 	// Process deferred removals *after* updating
 	for (const auto& object : m_objectsToRemove)
 	{
-		m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
+		m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(),
+			[object](const std::unique_ptr<GameObject>& obj) { return obj.get() == object; }), m_objects.end());
 	}
 	m_objectsToRemove.clear();
 }

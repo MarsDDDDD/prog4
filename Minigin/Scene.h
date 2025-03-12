@@ -9,12 +9,12 @@ namespace dae
 	{
 		friend Scene& SceneManager::CreateScene(const std::string& name);
 	public:
-		void Add(std::shared_ptr<GameObject> object);
-		void Remove(std::shared_ptr<GameObject> object);
+		void Add(std::unique_ptr<GameObject> object);
+		void Remove(GameObject* object);
 		void RemoveAll();
 
-		void Update(float deltaTime); // Modified Update method
-		void FixedUpdate(float fixedTimeStep); // New FixedUpdate method
+		void Update(float deltaTime);
+		void FixedUpdate(float fixedTimeStep);
 		void Render() const;
 
 		~Scene();
@@ -27,11 +27,11 @@ namespace dae
 		explicit Scene(const std::string& name);
 
 		std::string m_name;
-		std::vector < std::shared_ptr<GameObject>> m_objects{};
+		std::vector<std::unique_ptr<GameObject>> m_objects{};
 
 		static unsigned int m_idCounter;
 
-		std::vector<std::shared_ptr<GameObject>> m_objectsToRemove;
+		std::vector<GameObject*> m_objectsToRemove;
 	};
 
 }

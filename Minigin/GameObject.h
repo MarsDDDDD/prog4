@@ -49,7 +49,7 @@ namespace dae
         // Hierarchy
         void SetParent(GameObject* parent, bool keepWorldPosition = true);
         std::weak_ptr<GameObject> GetParent() const { return m_parent; }
-        const std::vector<std::shared_ptr<GameObject>>& GetChildren() const { return m_Children; }
+        const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return m_Children; }
         void RemoveAllChildren();
         void RemoveChild(GameObject* child);
 
@@ -64,7 +64,7 @@ namespace dae
 
         // Parent/Child
         std::weak_ptr<GameObject> m_parent;
-        std::vector<std::shared_ptr<GameObject>> m_Children;
+        std::vector<std::unique_ptr<GameObject>> m_Children;
 
         bool IsDescendant(GameObject* potentialDescendant) const;
     };
