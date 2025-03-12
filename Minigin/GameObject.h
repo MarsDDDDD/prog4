@@ -21,6 +21,8 @@ namespace dae
 		void FixedUpdate(float deltaTime);
 		void Render() const;
 
+		void SetLocalPosition(float x, float y);
+
 		GameObject();
 		~GameObject() = default;
 		GameObject(const GameObject& other) = delete;
@@ -29,8 +31,8 @@ namespace dae
 		GameObject& operator=(GameObject&& other) = delete;
 
 		//TransformComponent* GetTransform() const { return GetComponent<TransformComponent>(); }
-		const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>(); }
-		void SetParent(GameObject* pParent);
+		TransformComponent* GetTransform() { return GetComponent<TransformComponent>(); }
+		void SetParent(GameObject* pParent, bool keepWorldPosition = false);
 		GameObject* GetParent() const;
 		const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return m_pChildren; }
 
@@ -39,90 +41,82 @@ namespace dae
 
 		GameObject* CreateGameObject();
 
-		template <class T>
-		T* AddComponent();
+		bool IsDescendant(GameObject* potentialDescendant) const;
 
-		template <class T>
-		bool RemoveComponent();
+		// Component Management
+		template <typename T>
+		void AddComponent(std::unique_ptr<T> component);
 
-		template <class T>
+		template <typename T>
 		T* GetComponent() const;
 
-		template <class T>
+		template <typename T>
 		bool HasComponent() const;
+
+		template <typename T>
+		void RemoveComponent();
 
 	private:
 		GameObject* m_pParent{};
 		std::vector<std::unique_ptr<GameObject>> m_pChildren{};
-		std::vector<std::unique_ptr<BaseComponent>> m_Components{};
+
+		// Component storage
+		std::vector<std::unique_ptr<BaseComponent>> m_Components;
+		std::map<std::type_index, BaseComponent*> m_ComponentMap;
+
+		// For deferred removal
+		std::vector<BaseComponent*> m_pComponentsToRemove;
+		std::queue<std::type_index> m_ComponentTypesToRemove;
+
 
 		bool m_IsMarkedDead{};
 	};
 
 
-
-
-	template<class T>
-	inline T* dae::GameObject::AddComponent()
+	// Template Implementations
+	template <typename T>
+	void GameObject::AddComponent(std::unique_ptr<T> component)
 	{
-		static_assert(std::is_base_of<BaseComponent, T>(), "T needs to be derived from the BaseComponent class");
-
 		if (HasComponent<T>())
-		{
-			std::cout << "Trying to add an already existing component\n";
-			return nullptr;
-		}
+			return;
 
-		std::unique_ptr<T> pComponent = std::make_unique<T>();
-		pComponent->SetOwner(this);
+		// Store raw pointer in the map before we move it
+		T* rawPtr = component.get();
+		m_ComponentMap[typeid(T)] = rawPtr;
 
-		T* rawPtr = pComponent.get();
-		m_Components.emplace_back(std::move(pComponent));
-
-		return rawPtr;
+		// Now move into the vector
+		m_Components.emplace_back(std::move(component));
 	}
 
-	template <class T>
-	inline bool GameObject::RemoveComponent()
+	template <typename T>
+	T* GameObject::GetComponent() const
 	{
-		static_assert(std::is_base_of<BaseComponent, T>(), "T needs to be derived from the BaseComponent class");
-
-		for (const auto& component : m_Components)
+		auto it = m_ComponentMap.find(typeid(T));
+		if (it != m_ComponentMap.end())
 		{
-			if (std::dynamic_pointer_cast<T>(component))
-			{
-				delete component;
-				return true;
-			}
+			// Use dynamic_cast for proper downcasting
+			return dynamic_cast<T*>(it->second);
 		}
-		return false;
-	}
-
-	template<class T>
-	inline T* dae::GameObject::GetComponent() const
-	{
-		static_assert(std::is_base_of<BaseComponent, T>(), "T needs to be derived from the BaseComponent class");
-
-		for (const auto& component : m_Components)
-		{
-			if (dynamic_cast<T*>(component.get()))
-				return dynamic_cast<T*>(component.get());
-		}
-
 		return nullptr;
 	}
 
-	template <class T>
-	inline bool dae::GameObject::HasComponent() const
+	template <typename T>
+	bool GameObject::HasComponent() const
 	{
-		static_assert(std::is_base_of<BaseComponent, T>(), "T needs to be derived from the BaseComponent class");
+		return m_ComponentMap.count(typeid(T)) > 0;
+	}
 
-		for (const auto& component : m_Components)
+	template <typename T>
+	void GameObject::RemoveComponent()
+	{
+		auto typeIndex = typeid(T);
+		if (m_ComponentMap.count(typeIndex) > 0)
 		{
-			if (dynamic_cast<T*>(component.get()))
-				return true;
+			auto ptr = m_ComponentMap[typeid(T)];
+			// Mark for removal
+			m_pComponentsToRemove.emplace_back(ptr);
+			m_ComponentTypesToRemove.push(typeIndex);
 		}
-		return false;
 	}
 }
 
