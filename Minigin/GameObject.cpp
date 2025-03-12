@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "BaseComponent.h"
 #include "TransformComponent.h"
-
+#include <stdexcept>
 namespace dae
 {
     GameObject::GameObject()
@@ -91,44 +91,15 @@ namespace dae
 
     void GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
     {
-        // Prevent self-parenting or cyclical references
-        if (parent == this || (parent && parent->IsDescendant(this)))
+        if (parent == this || IsDescendant(parent))
         {
-            return;
+            throw std::runtime_error("Cannot set parent to self or descendant");
         }
 
-        glm::vec3 originalWorldPosition{};
-        if (keepWorldPosition && GetTransform())
-        {
-            originalWorldPosition = GetTransform()->GetWorldPosition();
-        }
-
-        if (auto currentParent = m_parent.lock())
-        {
-            auto& siblings = currentParent->m_Children;
-            const auto it = std::find_if(siblings.begin(), siblings.end(),
-                [this](const std::unique_ptr<GameObject>& obj) { return obj.get() == this; });
-            if (it != siblings.end())
-            {
-                siblings.erase(it);
-            }
-        }
-
-        m_parent = parent ? parent->shared_from_this() : nullptr;
+        m_parent = parent;
         if (parent)
         {
             parent->m_Children.emplace_back(this);
-        }
-
-        if (parent && keepWorldPosition)
-        {
-            glm::vec3 parentWorldPosition = parent->GetTransform()->GetWorldPosition();
-            glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
-            GetTransform()->SetLocalPosition(newLocalPosition);
-        }
-        else if (GetTransform())
-        {
-            GetTransform()->SetPositionDirty();
         }
     }
 
@@ -172,14 +143,14 @@ namespace dae
         {
             return false;
         }
-        auto current = potentialDescendant->m_parent.lock();
+        auto current = potentialDescendant->m_parent;
         while (current)
         {
-            if (current.get() == this)
+            if (current == this)
             {
                 return true;
             }
-            current = current->m_parent.lock();
+            current = current->m_parent;
         }
         return false;
     }
