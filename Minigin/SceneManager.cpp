@@ -35,3 +35,12 @@ dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
 	m_pScenes.emplace_back(scene);
 	return *scene;
 }
+
+void dae::SceneManager::UpdateCleanup()
+{
+	for (auto& scene : m_pScenes)
+	{
+		scene->UpdateCleanup();
+	}
+}
+

@@ -30,14 +30,13 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
-		//TransformComponent* GetTransform() const { return GetComponent<TransformComponent>(); }
 		TransformComponent* GetTransform() { return GetComponent<TransformComponent>(); }
 		void SetParent(GameObject* pParent, bool keepWorldPosition = false);
 		GameObject* GetParent() const;
 		const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return m_pChildren; }
 
 		void Destroy();
-		bool IsMarkedAsDead() const { return m_IsMarkedDead; };
+		bool IsPendingRemoval() const { return m_IsPendingRemoval; };
 
 		GameObject* CreateGameObject();
 
@@ -64,12 +63,12 @@ namespace dae
 		std::vector<std::unique_ptr<BaseComponent>> m_Components;
 		std::map<std::type_index, BaseComponent*> m_ComponentMap;
 
-		// For deferred removal
+		// For component deferred removal
 		std::vector<BaseComponent*> m_pComponentsToRemove;
 		std::queue<std::type_index> m_ComponentTypesToRemove;
 
-
-		bool m_IsMarkedDead{};
+		// For GameObject deferred removal
+		bool m_IsPendingRemoval{};
 	};
 
 

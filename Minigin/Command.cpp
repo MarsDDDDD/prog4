@@ -41,5 +41,6 @@ void MoveCommand::Execute(float deltaTime)
 			break;
 		}
 		m_pGameObject->GetTransform()->SetLocalPosition(currentPos);
+		m_pGameObject->GetTransform()->SetPositionDirty();
 	}
 }

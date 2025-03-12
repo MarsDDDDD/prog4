@@ -7,9 +7,10 @@ namespace dae
 {
     GameObject::GameObject()
     {
+		auto transform = std::make_unique<TransformComponent>(this);
+		AddComponent(std::move(transform));
     }
 
-    GameObject::~GameObject() = default;
 
 
 	void GameObject::Update(float deltaTime)
@@ -88,37 +89,33 @@ namespace dae
 			return;
 		}
 
-		GameObject* pOldParent{};
+		GameObject* pOldParent = m_pParent;
 
 		if (pOldParent)
 		{
 			if (pOldParent == pParent) return;
 
 			// Remove itself from the children list of the previous parent
-			for (int i{ static_cast<int>(pOldParent->m_pChildren.size() - 1) }; i >= 0; --i)
-			{
-				const auto& pChild{ pOldParent->m_pChildren[i] };
-
-				if (pChild.get() == this)
-				{
-					pOldParent->m_pChildren[i] = std::move(pOldParent->m_pChildren[pOldParent->m_pChildren.size() - 1]);
-					pOldParent->m_pChildren.pop_back();
-					break;
+			auto it = std::remove_if(
+				pOldParent->m_pChildren.begin(),
+				pOldParent->m_pChildren.end(),
+				[this](const std::unique_ptr<GameObject>& child) {
+					return child.get() == this;
 				}
+			);
+
+			if (it != pOldParent->m_pChildren.end())
+			{
+				pOldParent->m_pChildren.erase(it, pOldParent->m_pChildren.end());
 			}
 		}
-		else if (!pParent)
-		{
-			return;
-		}
-
 
 		m_pParent = pParent;
 
 		if (pParent)
-			pParent->m_pChildren.emplace_back(std::unique_ptr<GameObject>(this));
-
-		auto pTransform{ GetTransform() };
+		{
+			pParent->m_pChildren.emplace_back(this);
+		}
 
 		if (pParent && keepWorldPosition)
 		{
@@ -131,7 +128,6 @@ namespace dae
 		{
 			GetTransform()->SetPositionDirty();
 		}
-
 	}
 
 	GameObject* GameObject::GetParent() const
@@ -143,21 +139,20 @@ namespace dae
 
 	void GameObject::Destroy()
 	{
-		m_IsMarkedDead = true;
+		m_IsPendingRemoval = true;
 
 		// Destroy all children
 		for (const auto& child : m_pChildren)
 		{
 			child->Destroy();
 		}
+
+		m_pChildren.clear();
 	}
 
 	GameObject* GameObject::CreateGameObject()
 	{
 		auto pGameObject{ std::make_unique<GameObject>() };
-		// Create TransformComponent with unique ownership
-		auto transform = std::make_unique<TransformComponent>(this);
-		AddComponent(std::move(transform));
 
 		const auto pGameObjectToReturn{ pGameObject.get() };
 

@@ -90,7 +90,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	bool doContinue = true;
 
 	//Fixed Time Step
-	const float fixedTimeStep{ 0.02f }; // Example: 50 FPS for physics.  Should be a setting.
+	const float fixedTimeStep{ 0.02f }; // 50 FPS for physics.  Should be a setting.
 	float lag = 0.0f;
 	auto lastTime = std::chrono::high_resolution_clock::now();
 
@@ -113,8 +113,11 @@ void dae::Minigin::Run(const std::function<void()>& load)
 			lag -= fixedTimeStep;
 		}
 
-		sceneManager.Update(deltaTime); // Pass delta time to update.
+		sceneManager.Update(deltaTime); 
+		sceneManager.UpdateCleanup();
+
 		renderer.Render();
+
 
 		//Optional: limit frame rate
 		const auto sleep_time = currentTime + std::chrono::milliseconds(16) - std::chrono::high_resolution_clock::now(); //Try to maintain around 60 fps render, Should be a setting

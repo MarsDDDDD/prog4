@@ -11,53 +11,61 @@ Scene::Scene(const std::string& name) : m_name(name) {}
 
 Scene::~Scene() = default;
 
-void Scene::Add(std::shared_ptr<GameObject> object)
+void Scene::Add(std::unique_ptr<GameObject> object)
 {
-	m_objects.emplace_back(std::move(object));
+    m_objects.emplace_back(std::move(object));
 }
 
-void Scene::Remove(std::shared_ptr<GameObject> object)
+
+void Scene::Remove(std::unique_ptr<GameObject> object)
 {
-	m_objectsToRemove.emplace_back(object); // Defer removal
+    m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
 }
 
 void Scene::RemoveAll()
 {
-	//Mark all objects for removal.  This is safer than clearing m_objects directly
-	for (const auto& object : m_objects)
-	{
-		Remove(object);
-	}
+    m_objects.clear();
+}
+
+GameObject* Scene::CreateGameObject()
+{
+    auto pGameObject = std::make_unique<GameObject>();
+
+    GameObject* pGameObjectToReturn = pGameObject.get();
+
+    Add(std::move(pGameObject));
+    return pGameObjectToReturn;
 }
 
 void Scene::Update(float deltaTime)
 {
-	for (auto& object : m_objects)
-	{
-		object->Update(deltaTime);
-	}
-
-	// Process deferred removals *after* updating
-	for (const auto& object : m_objectsToRemove)
-	{
-		m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
-	}
-	m_objectsToRemove.clear();
+    for (auto& object : m_objects)
+    {
+        object->Update(deltaTime);
+    }
 }
 
 void Scene::FixedUpdate(float fixedTimeStep)
 {
-	for (auto& object : m_objects)
-	{
-		object->FixedUpdate(fixedTimeStep);
-	}
+    for (auto& object : m_objects)
+    {
+        object->FixedUpdate(fixedTimeStep);
+    }
 }
-
 
 void Scene::Render() const
 {
-	for (const auto& object : m_objects)
-	{
-		object->Render();
-	}
+    for (const auto& object : m_objects)
+    {
+        object->Render();
+    }
+}
+
+void Scene::UpdateCleanup()
+{
+    // Deferred removal
+    m_objects.erase(std::remove_if(begin(m_objects), end(m_objects), [](const auto& pGameObject)
+        {
+            return pGameObject->IsPendingRemoval();
+        }), end(m_objects));
 }
