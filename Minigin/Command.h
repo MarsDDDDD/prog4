@@ -9,9 +9,9 @@ namespace dae
 		explicit Command() = default;
 		virtual ~Command() = default;
 		Command(const Command& other) = delete;
-		Command& operator=(const Command& rhs) = delete;
+		Command& operator=(const Command& other) = delete;
 		Command(Command&& other) = delete;
-		Command& operator=(Command&& rhs) = delete;
+		Command& operator=(Command&& other) = delete;
 
 		virtual void Execute(float deltaTime = 0.f) = 0;
 	};
