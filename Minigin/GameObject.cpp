@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "BaseComponent.h"
 #include "TransformComponent.h"
-#include <stdexcept>
+
 namespace dae
 {
     GameObject::GameObject()
@@ -91,15 +91,44 @@ namespace dae
 
     void GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
     {
-        if (parent == this || IsDescendant(parent))
+        // Prevent self-parenting or cyclical references
+        if (parent == this || (parent && parent->IsDescendant(this)))
         {
-            throw std::runtime_error("Cannot set parent to self or descendant");
+            return;
         }
 
-        m_parent = parent;
+        glm::vec3 originalWorldPosition{};
+        if (keepWorldPosition && GetTransform())
+        {
+            originalWorldPosition = GetTransform()->GetWorldPosition();
+        }
+
+        if (auto currentParent = m_parent)
+        {
+            auto& siblings = currentParent->m_Children;
+            const auto it = std::find_if(siblings.begin(), siblings.end(),
+                [this](const std::unique_ptr<GameObject>& obj) { return obj.get() == this; });
+            if (it != siblings.end())
+            {
+                siblings.erase(it);
+            }
+        }
+
         if (parent)
         {
+            m_parent = parent;
             parent->m_Children.emplace_back(this);
+        }
+
+        if (parent && keepWorldPosition)
+        {
+            glm::vec3 parentWorldPosition = parent->GetTransform()->GetWorldPosition();
+            glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
+            GetTransform()->SetLocalPosition(newLocalPosition);
+        }
+        else if (GetTransform())
+        {
+            GetTransform()->SetPositionDirty();
         }
     }
 
@@ -127,7 +156,7 @@ namespace dae
             m_Children.erase(it, m_Children.end());
         }
 
-        child->m_parent.reset();
+        child->m_parent = nullptr;
 
         // Recalculate child's local position based on its previous world position
         if (auto* childTransform = child->GetTransform())
