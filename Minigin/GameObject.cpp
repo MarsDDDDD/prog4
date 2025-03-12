@@ -48,7 +48,7 @@ namespace dae
         m_pComponentsToRemove.clear();
 
         // Update children
-        for (const auto& child : m_Children)
+        for (auto* child : m_pChildren)
         {
             child->Update(deltaTime);
         }
@@ -61,7 +61,7 @@ namespace dae
             component->FixedUpdate(fixedTimeStep);
         }
 
-        for (const auto& child : m_Children)
+        for (auto* child : m_pChildren)
         {
             child->FixedUpdate(fixedTimeStep);
         }
@@ -74,7 +74,7 @@ namespace dae
             component->Render();
         }
 
-        for (const auto& child : m_Children)
+        for (auto* child : m_pChildren)
         {
             child->Render();
         }
@@ -103,20 +103,20 @@ namespace dae
             originalWorldPosition = GetTransform()->GetWorldPosition();
         }
 
-        if (auto currentParent = m_parent.lock())
+        if (m_parent)
         {
-            auto& siblings = currentParent->m_Children;
-            const auto it = std::find(siblings.begin(), siblings.end(), shared_from_this());
+            auto& siblings = m_parent->m_pChildren;
+            const auto it = std::find(siblings.begin(), siblings.end(), this);
             if (it != siblings.end())
             {
                 siblings.erase(it);
             }
         }
 
-        m_parent = parent ? parent->shared_from_this() : nullptr;
+        m_parent = parent;
         if (parent)
         {
-            parent->m_Children.emplace_back(shared_from_this());
+            parent->m_pChildren.emplace_back(this);
         }
 
         if (parent && keepWorldPosition)
@@ -133,11 +133,11 @@ namespace dae
 
     void GameObject::RemoveAllChildren()
     {
-        for (auto& child : m_Children)
+        for (auto* child : m_pChildren)
         {
-            child->SetParent(nullptr);
+            child->m_parent = nullptr;
         }
-        m_Children.clear();
+        m_pChildren.clear();
     }
 
     void GameObject::RemoveChild(GameObject* child)
@@ -147,18 +147,13 @@ namespace dae
             return;
         }
 
-        auto it = std::remove_if(
-            m_Children.begin(),
-            m_Children.end(),
-            [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; }
-        );
-
-        if (it != m_Children.end())
+        auto it = std::remove(m_pChildren.begin(), m_pChildren.end(), child);
+        if (it != m_pChildren.end())
         {
-            m_Children.erase(it, m_Children.end());
+            m_pChildren.erase(it, m_pChildren.end());
         }
 
-        child->m_parent.reset();
+        child->m_parent = nullptr;
 
         // Recalculate child's local position based on its previous world position
         if (auto* childTransform = child->GetTransform())
@@ -170,14 +165,14 @@ namespace dae
 
     bool GameObject::IsDescendant(GameObject* potentialDescendant) const
     {
-        auto current = potentialDescendant->m_parent.lock();
+        auto current = potentialDescendant->m_parent;
         while (current)
         {
-            if (current.get() == this)
+            if (current == this)
             {
                 return true;
             }
-            current = current->m_parent.lock();
+            current = current->m_parent;
         }
         return false;
     }
