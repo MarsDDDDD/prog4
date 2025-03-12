@@ -170,5 +170,4 @@ void InputManager::RemoveKeyboardCommand(unsigned int key)
 			++it;
 		}
 	}
-
 }
