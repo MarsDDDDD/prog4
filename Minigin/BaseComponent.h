@@ -16,6 +16,10 @@ namespace dae
 		friend class GameObject;
 		explicit BaseComponent(GameObject* pOwner) : m_pGameObject(pOwner) {} // Add and make protected
 		//void SetGameObject(GameObject* gameObject) { m_pGameObject = gameObject; } // Remove!
-		GameObject* m_pGameObject{}; // Pointer to the owning GameObject.
+		GameObject* m_pGameObject{};
+		GameObject* GetOwner() const;
+		void SetOwner(GameObject* pParent);
+		// Pointer to the owning GameObject.
+		GameObject* m_pOwner;
 	};
 }
