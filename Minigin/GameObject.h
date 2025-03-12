@@ -5,113 +5,124 @@
 #include <typeindex>
 #include <map>
 #include <queue>
+#include <iostream>
 #include "BaseComponent.h"
 #include "TransformComponent.h"
 
+
 namespace dae
 {
-    class BaseComponent;
+	class BaseComponent;
 
-    class GameObject final : public std::enable_shared_from_this<GameObject>
-    {
-    public:
+	class GameObject final
+	{
+	public:
+		void Update(float deltaTime);
+		void FixedUpdate(float deltaTime);
+		void Render() const;
 
-        GameObject();
-        virtual ~GameObject();
-        GameObject(const GameObject& other) = delete;
-        GameObject(GameObject&& other) = delete;
-        GameObject& operator=(const GameObject& other) = delete;
-        GameObject& operator=(GameObject&& other) = delete;
+		GameObject();
+		~GameObject() = default;
+		GameObject(const GameObject& other) = delete;
+		GameObject(GameObject&& other) = delete;
+		GameObject& operator=(const GameObject& other) = delete;
+		GameObject& operator=(GameObject&& other) = delete;
 
-        void Update(float deltaTime);
-        void FixedUpdate(float fixedTimeStep);
-        void Render() const;
+		//TransformComponent* GetTransform() const { return GetComponent<TransformComponent>(); }
+		const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>(); }
+		void SetParent(GameObject* pParent);
+		GameObject* GetParent() const;
+		const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return m_pChildren; }
 
-        // Position
-        void SetLocalPosition(float x, float y);
+		void Destroy();
+		bool IsMarkedAsDead() const { return m_IsMarkedDead; };
 
-        // Component Management
-        template <typename T>
-        void AddComponent(std::unique_ptr<T> component);
+		GameObject* CreateGameObject();
 
-        template <typename T>
-        T* GetComponent() const;
+		template <class T>
+		T* AddComponent();
 
-        template <typename T>
-        bool HasComponent() const;
+		template <class T>
+		bool RemoveComponent();
 
-        template <typename T>
-        void RemoveComponent();
+		template <class T>
+		T* GetComponent() const;
 
-        TransformComponent* GetTransform() { return GetComponent<TransformComponent>(); }
-        const TransformComponent* GetTransform() const { return GetComponent<TransformComponent>(); }
+		template <class T>
+		bool HasComponent() const;
 
-        // Hierarchy
-        void SetParent(GameObject* parent, bool keepWorldPosition = true);
-        std::weak_ptr<GameObject> GetParent() const { return m_parent; }
-        const std::vector<std::shared_ptr<GameObject>>& GetChildren() const { return m_Children; }
-        void RemoveAllChildren();
-        void RemoveChild(GameObject* child);
+	private:
+		GameObject* m_pParent{};
+		std::vector<std::unique_ptr<GameObject>> m_pChildren{};
+		std::vector<std::unique_ptr<BaseComponent>> m_Components{};
 
-    private:
-        // Component storage
-        std::vector<std::unique_ptr<BaseComponent>> m_Components;
-        std::map<std::type_index, BaseComponent*> m_ComponentMap;
+		bool m_IsMarkedDead{};
+	};
 
-        // For deferred removal
-        std::vector<BaseComponent*> m_pComponentsToRemove;
-        std::queue<std::type_index> m_ComponentTypesToRemove;
 
-        // Parent/Child
-        std::weak_ptr<GameObject> m_parent;
-        std::vector<std::shared_ptr<GameObject>> m_Children;
 
-        bool IsDescendant(GameObject* potentialDescendant) const;
-    };
 
-    // Template Implementations
-    template <typename T>
-    void GameObject::AddComponent(std::unique_ptr<T> component)
-    {
-        if (HasComponent<T>())
-            return;
+	template<class T>
+	inline T* dae::GameObject::AddComponent()
+	{
+		static_assert(std::is_base_of<BaseComponent, T>(), "T needs to be derived from the BaseComponent class");
 
-        // Store raw pointer in the map before we move it
-        T* rawPtr = component.get();
-        m_ComponentMap[typeid(T)] = rawPtr;
+		if (HasComponent<T>())
+		{
+			std::cout << "Trying to add an already existing component\n";
+			return nullptr;
+		}
 
-        // Now move into the vector
-        m_Components.emplace_back(std::move(component));
-    }
+		std::unique_ptr<T> pComponent = std::make_unique<T>();
+		pComponent->SetOwner(this);
 
-    template <typename T>
-    T* GameObject::GetComponent() const
-    {
-        auto it = m_ComponentMap.find(typeid(T));
-        if (it != m_ComponentMap.end())
-        {
-            // Use dynamic_cast for proper downcasting
-            return dynamic_cast<T*>(it->second);
-        }
-        return nullptr;
-    }
+		T* rawPtr = pComponent.get();
+		m_Components.emplace_back(std::move(pComponent));
 
-    template <typename T>
-    bool GameObject::HasComponent() const
-    {
-        return m_ComponentMap.count(typeid(T)) > 0;
-    }
+		return rawPtr;
+	}
 
-    template <typename T>
-    void GameObject::RemoveComponent()
-    {
-        auto typeIndex = typeid(T);
-        if (m_ComponentMap.count(typeIndex) > 0)
-        {
-            auto ptr = m_ComponentMap[typeid(T)];
-            // Mark for removal
-            m_pComponentsToRemove.emplace_back(ptr);
-            m_ComponentTypesToRemove.push(typeIndex);
-        }
-    }
+	template <class T>
+	inline bool GameObject::RemoveComponent()
+	{
+		static_assert(std::is_base_of<BaseComponent, T>(), "T needs to be derived from the BaseComponent class");
+
+		for (const auto& component : m_Components)
+		{
+			if (std::dynamic_pointer_cast<T>(component))
+			{
+				delete component;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	template<class T>
+	inline T* dae::GameObject::GetComponent() const
+	{
+		static_assert(std::is_base_of<BaseComponent, T>(), "T needs to be derived from the BaseComponent class");
+
+		for (const auto& component : m_Components)
+		{
+			if (dynamic_cast<T*>(component.get()))
+				return dynamic_cast<T*>(component.get());
+		}
+
+		return nullptr;
+	}
+
+	template <class T>
+	inline bool dae::GameObject::HasComponent() const
+	{
+		static_assert(std::is_base_of<BaseComponent, T>(), "T needs to be derived from the BaseComponent class");
+
+		for (const auto& component : m_Components)
+		{
+			if (dynamic_cast<T*>(component.get()))
+				return true;
+		}
+		return false;
+	}
 }
+

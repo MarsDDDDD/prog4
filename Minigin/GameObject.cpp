@@ -14,171 +14,122 @@ namespace dae
 
     GameObject::~GameObject() = default;
 
-    void GameObject::Update(float deltaTime)
-    {
-        // Update all components
-        for (auto& component : m_Components)
-        {
-            component->Update(deltaTime);
-        }
 
-        // Apply pending removals
-        for (auto* componentToRemove : m_pComponentsToRemove)
-        {
-            // Find this pointer in m_Components
-            auto it = std::find_if(
-                m_Components.begin(),
-                m_Components.end(),
-                [componentToRemove](std::unique_ptr<BaseComponent>& c) {
-                    return c.get() == componentToRemove;
-                }
-            );
+	void GameObject::Update()
+	{
+		for (const auto& component : m_Components)
+		{
+			component->Update();
+		}
+		for (const auto& child : m_pChildren)
+		{
+			child->Update();
+		}
+	}
 
-            // Remove from vector if found
-            if (it != m_Components.end())
-            {
-                m_Components.erase(it);
-            }
+	void GameObject::FixedUpdate()
+	{
+		for (const auto& component : m_Components)
+		{
+			component->FixedUpdate();
+		}
+		for (const auto& child : m_pChildren)
+		{
+			child->FixedUpdate();
+		}
+	}
 
-            // Also remove from the lookup map
-            auto typeIndex = m_ComponentTypesToRemove.front();
-            m_ComponentMap.erase(typeIndex);
-            m_ComponentTypesToRemove.pop();
-        }
-        m_pComponentsToRemove.clear();
+	void GameObject::Render() const
+	{
+		for (const auto& pComponent : m_Components)
+		{
+			pComponent->Render();
+		}
+		for (const auto& child : m_pChildren)
+		{
+			child->Render();
+		}
+	}
 
-        // Update children
-        for (const auto& child : m_Children)
-        {
-            child->Update(deltaTime);
-        }
-    }
+	void GameObject::SetParent(GameObject* pParent)
+	{
+		GameObject* pOldParent{};
 
-    void GameObject::FixedUpdate(float fixedTimeStep)
-    {
-        for (auto& component : m_Components)
-        {
-            component->FixedUpdate(fixedTimeStep);
-        }
+		if (pOldParent)
+		{
+			if (pOldParent == pParent) return;
 
-        for (const auto& child : m_Children)
-        {
-            child->FixedUpdate(fixedTimeStep);
-        }
-    }
+			// Remove itself from the children list of the previous parent
+			for (int i{ static_cast<int>(pOldParent->m_pChildren.size() - 1) }; i >= 0; --i)
+			{
+				const auto& pChild{ pOldParent->m_pChildren[i] };
 
-    void GameObject::Render() const
-    {
-        for (auto& component : m_Components)
-        {
-            component->Render();
-        }
+				if (pChild.get() == this)
+				{
+					pOldParent->m_pChildren[i] = std::move(pOldParent->m_pChildren[pOldParent->m_pChildren.size() - 1]);
+					pOldParent->m_pChildren.pop_back();
+					break;
+				}
+			}
+		}
+		else if (!pParent)
+		{
+			return;
+		}
 
-        for (const auto& child : m_Children)
-        {
-            child->Render();
-        }
-    }
 
-    void GameObject::SetLocalPosition(float x, float y)
-    {
-        // Directly call the TransformComponent since it's always present
-        if (auto* transform = GetTransform())
-        {
-            transform->SetLocalPosition(x, y, 0.0f);
-        }
-    }
+		m_pParent = pParent;
 
-    void GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
-    {
-        // Prevent self-parenting or cyclical references
-        if (parent == this || (parent && parent->IsDescendant(this)))
-        {
-            return;
-        }
+		if (pParent)
+			pParent->m_pChildren.push_back(std::unique_ptr<GameObject>(this));
 
-        glm::vec3 originalWorldPosition{};
-        if (keepWorldPosition && GetTransform())
-        {
-            originalWorldPosition = GetTransform()->GetWorldPosition();
-        }
+		auto pTransform{ GetTransform() };
+		if (!pTransform)
+			return;
 
-        if (auto currentParent = m_parent.lock())
-        {
-            auto& siblings = currentParent->m_Children;
-            const auto it = std::find(siblings.begin(), siblings.end(), shared_from_this());
-            if (it != siblings.end())
-            {
-                siblings.erase(it);
-            }
-        }
+		if (pParent)
+		{
+			// Set the local position to the position relative to the new parent
+			auto pParentTransform{ pParent->GetTransform() };
+			if (pParentTransform)
+				pTransform->SetLocalPosition(pTransform->GetWorldPosition() - pParentTransform->GetWorldPosition());
+		}
+		else
+		{
+			// Set the local position to the world position
+			pTransform->SetLocalPosition(pTransform->GetWorldPosition());
+		}
 
-        m_parent = parent ? parent->shared_from_this() : nullptr;
-        if (parent)
-        {
-            parent->m_Children.emplace_back(shared_from_this());
-        }
+	}
 
-        if (parent && keepWorldPosition)
-        {
-            glm::vec3 parentWorldPosition = parent->GetTransform()->GetWorldPosition();
-            glm::vec3 newLocalPosition = originalWorldPosition - parentWorldPosition;
-            GetTransform()->SetLocalPosition(newLocalPosition);
-        }
-        else if (GetTransform())
-        {
-            GetTransform()->SetPositionDirty();
-        }
-    }
+	GameObject* GameObject::GetParent() const
+	{
+		if (m_pParent) return nullptr;
 
-    void GameObject::RemoveAllChildren()
-    {
-        for (auto& child : m_Children)
-        {
-            child->SetParent(nullptr);
-        }
-        m_Children.clear();
-    }
+		return m_pParent;
+	}
 
-    void GameObject::RemoveChild(GameObject* child)
-    {
-        if (!child || !IsDescendant(child))
-        {
-            return;
-        }
+	void GameObject::Destroy()
+	{
+		m_IsMarkedDead = true;
 
-        auto it = std::remove_if(
-            m_Children.begin(),
-            m_Children.end(),
-            [child](const std::shared_ptr<GameObject>& c) { return c.get() == child; }
-        );
+		// Destroy all children
+		for (const auto& child : m_pChildren)
+		{
+			child->Destroy();
+		}
+	}
 
-        if (it != m_Children.end())
-        {
-            m_Children.erase(it, m_Children.end());
-        }
+	GameObject* GameObject::CreateGameObject()
+	{
+		auto pGameObject{ std::make_unique<GameObject>() };
+		pGameObject->Init();
 
-        child->m_parent.reset();
+		const auto pGameObjectPtr{ pGameObject.get() };
 
-        // Recalculate child's local position based on its previous world position
-        if (auto* childTransform = child->GetTransform())
-        {
-            glm::vec3 childWorldPosition = childTransform->GetWorldPosition();
-            childTransform->SetLocalPosition(childWorldPosition);
-        }
-    }
+		pGameObject->m_pParent = this;
+		m_pChildren.push_back(std::move(pGameObject));
 
-    bool GameObject::IsDescendant(GameObject* potentialDescendant) const
-    {
-        auto current = potentialDescendant->m_parent.lock();
-        while (current)
-        {
-            if (current.get() == this)
-            {
-                return true;
-            }
-            current = current->m_parent.lock();
-        }
-        return false;
-    }
+		return pGameObjectPtr;
+	}
 }
