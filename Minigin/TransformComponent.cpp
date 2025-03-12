@@ -33,14 +33,14 @@ const glm::vec3& dae::TransformComponent::GetWorldPosition()
 
 void dae::TransformComponent::UpdateWorldPosition()
 {
-    if (m_pGameObject->GetParent().lock() == nullptr)
+    if (m_pGameObject->GetParent() == nullptr)
     {
         m_WorldPosition = m_LocalPosition;
     }
     else
     {
         // Get the parent's world position  <-  THIS WAS THE KEY FIX
-        const auto parentWorldPos = m_pGameObject->GetParent().lock()->GetTransform()->GetWorldPosition();  //  RECURSIVE CALL!
+        const auto parentWorldPos = m_pGameObject->GetParent()->GetTransform()->GetWorldPosition();  //  RECURSIVE CALL!
         m_WorldPosition = parentWorldPos + m_LocalPosition;
     }
     m_IsDirty = false;

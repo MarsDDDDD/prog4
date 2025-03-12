@@ -103,7 +103,7 @@ namespace dae
             originalWorldPosition = GetTransform()->GetWorldPosition();
         }
 
-        if (auto currentParent = m_parent.lock())
+        if (auto currentParent = m_parent)
         {
             auto& siblings = currentParent->m_Children;
             const auto it = std::find_if(siblings.begin(), siblings.end(),
@@ -114,9 +114,9 @@ namespace dae
             }
         }
 
-        m_parent = parent ? parent->shared_from_this() : nullptr;
         if (parent)
         {
+            m_parent = parent;
             parent->m_Children.emplace_back(this);
         }
 
@@ -156,7 +156,7 @@ namespace dae
             m_Children.erase(it, m_Children.end());
         }
 
-        child->m_parent.reset();
+        child->m_parent = nullptr;
 
         // Recalculate child's local position based on its previous world position
         if (auto* childTransform = child->GetTransform())
@@ -172,14 +172,14 @@ namespace dae
         {
             return false;
         }
-        auto current = potentialDescendant->m_parent.lock();
+        auto current = potentialDescendant->m_parent;
         while (current)
         {
-            if (current.get() == this)
+            if (current == this)
             {
                 return true;
             }
-            current = current->m_parent.lock();
+            current = current->m_parent;
         }
         return false;
     }
