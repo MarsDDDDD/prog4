@@ -13,75 +13,32 @@ namespace dae
 		Command(Command&& other) = delete;
 		Command& operator=(Command&& rhs) = delete;
 
-
 		virtual void Execute(float deltaTime = 0.f) = 0;
 	};
 
-	class MoveUpCommand final : public Command
+	enum class Direction
 	{
-	public:
-		explicit MoveUpCommand(GameObject* pGameObject, float speed)
-			:m_pGameObject{ pGameObject }
-			, m_Speed{ speed }
-		{
-		}
-
-		void Execute(float deltaTime) override;
-	private:
-		GameObject* m_pGameObject{};
-		float m_Speed{};
+		Up,
+		Down,
+		Left,
+		Right
 	};
 
-	class MoveDownCommand final : public Command
+	class MoveCommand final : public Command
 	{
 	public:
-		explicit MoveDownCommand(GameObject* pGameObject, float speed)
-			:m_pGameObject{ pGameObject }
+		explicit MoveCommand(GameObject* pGameObject, float speed, Direction direction)
+			: m_pGameObject{ pGameObject }
 			, m_Speed{ speed }
+			, m_Direction{ direction }
 		{
 		}
 
 		void Execute(float deltaTime) override;
+
 	private:
 		GameObject* m_pGameObject{};
 		float m_Speed{};
-	};
-
-	class MoveLeftCommand final : public Command
-	{
-	public:
-		explicit MoveLeftCommand(GameObject* pGameObject, float speed)
-			:m_pGameObject{ pGameObject }
-			, m_Speed{ speed }
-		{
-		}
-
-		void Execute(float deltaTime) override;
-	private:
-		GameObject* m_pGameObject{};
-		float m_Speed{};
-	};
-
-	class MoveRightCommand final : public Command
-	{
-	public:
-		explicit MoveRightCommand(GameObject* pGameObject, float speed)
-			:m_pGameObject{ pGameObject }
-			, m_Speed{ speed }
-		{
-		}
-
-		void Execute(float deltaTime) override;
-	private:
-		GameObject* m_pGameObject{};
-		float m_Speed{};
+		Direction m_Direction{};
 	};
 }
-
-
-
-// These commands need to be registered with the Input manager
-// The input manager keeps track of all active commands
-// Checks if the input for the command has been executed by the user
-// Calls the Execute method on the registered command
-// Don't forget to unregister!

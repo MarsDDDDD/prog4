@@ -4,50 +4,42 @@
 
 using namespace dae;
 
-void MoveUpCommand::Execute(float deltaTime)
+void MoveCommand::Execute(float deltaTime)
 {
-	std::cout << "up" << std::endl;
+	switch (m_Direction)
+	{
+	case Direction::Up:
+		std::cout << "up" << std::endl;
+		break;
+	case Direction::Down:
+		std::cout << "down" << std::endl;
+		break;
+	case Direction::Left:
+		std::cout << "left" << std::endl;
+		break;
+	case Direction::Right:
+		std::cout << "right" << std::endl;
+		break;
+	}
 
 	if (m_pGameObject && m_pGameObject->GetTransform())
 	{
 		auto currentPos = m_pGameObject->GetTransform()->GetLocalPosition();
-		currentPos.y -= m_Speed * deltaTime;
+		switch (m_Direction)
+		{
+		case Direction::Up:
+			currentPos.y -= m_Speed * deltaTime;
+			break;
+		case Direction::Down:
+			currentPos.y += m_Speed * deltaTime;
+			break;
+		case Direction::Left:
+			currentPos.x -= m_Speed * deltaTime;
+			break;
+		case Direction::Right:
+			currentPos.x += m_Speed * deltaTime;
+			break;
+		}
 		m_pGameObject->GetTransform()->SetLocalPosition(currentPos);
 	}
-}
-
-void MoveDownCommand::Execute(float deltaTime)
-{
-	std::cout << "down" << std::endl;
-	if (m_pGameObject && m_pGameObject->GetTransform())
-	{
-		auto currentPos = m_pGameObject->GetTransform()->GetLocalPosition();
-		currentPos.y += m_Speed * deltaTime;
-		m_pGameObject->GetTransform()->SetLocalPosition(currentPos);
-	}
-
-}
-
-void MoveLeftCommand::Execute(float deltaTime)
-{
-	std::cout << "left" << std::endl;
-	if (m_pGameObject && m_pGameObject->GetTransform())
-	{
-		auto currentPos = m_pGameObject->GetTransform()->GetLocalPosition();
-		currentPos.x -= m_Speed * deltaTime;
-		m_pGameObject->GetTransform()->SetLocalPosition(currentPos);
-	}
-
-}
-
-void MoveRightCommand::Execute(float deltaTime)
-{
-	std::cout << "right" << std::endl;
-	if (m_pGameObject && m_pGameObject->GetTransform())
-	{
-		auto currentPos = m_pGameObject->GetTransform()->GetLocalPosition();
-		currentPos.x += m_Speed * deltaTime;
-		m_pGameObject->GetTransform()->SetLocalPosition(currentPos);
-	}
-
 }
