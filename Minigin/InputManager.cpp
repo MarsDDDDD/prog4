@@ -133,8 +133,42 @@ void InputManager::AddControllerCommand(XBoxController::XBoxButton button, unsig
 	m_ControllerActionMap[inputData] = std::move(pCommand);
 }
 
+void InputManager::RemoveControllerCommand(XBoxController::XBoxButton button)
+{
+	// Find and remove all assigned command related to the given button in the map
+	for (auto it = m_ControllerActionMap.begin(); it != m_ControllerActionMap.end();)
+	{
+		if (it->first.button == button)
+		{
+			it = m_ControllerActionMap.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+
 void InputManager::AddKeyboardCommand(unsigned int key, InputType type, std::unique_ptr<Command> pCommand)
 {
 	InputDataKeyboard inputData{ key, type };
 	m_KeyboardActionMap[inputData] = std::move(pCommand);
+}
+
+void InputManager::RemoveKeyboardCommand(unsigned int key)
+{
+	// Find and remove all assigned command related to the given key in the map
+	for (auto it = m_KeyboardActionMap.begin(); it != m_KeyboardActionMap.end();)
+	{
+		if (it->first.key == key)
+		{
+			it = m_KeyboardActionMap.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
 }
