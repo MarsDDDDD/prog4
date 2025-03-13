@@ -10,6 +10,11 @@ namespace dae
 {
     void HudObserver::Notify(const GameObject* actor, EventId event)
     {
+        if (actor != m_pActor)
+        {
+            return;
+        }
+
         switch(event)
         {
             case EventId::HEALTH_UPDATED:
@@ -28,6 +33,11 @@ namespace dae
             default:
                 break;
         }
+    }
+
+    void HudObserver::SetActor(GameObject* actor)
+    {
+		m_pActor = actor;
     }
     
     void HudObserver::SetHealthDisplay(GameObject* healthDisplay)

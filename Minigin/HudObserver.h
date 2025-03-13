@@ -14,12 +14,15 @@ namespace dae
         ~HudObserver() override = default;
         
         void Notify(const GameObject* actor, EventId event) override;
-        
+        void SetActor(GameObject* actor);
         // Set the GameObjects containing TextComponents
         void SetHealthDisplay(GameObject* healthDisplay);
         void SetScoreDisplay(GameObject* scoreDisplay);
 
     private:
+        GameObject* m_pActor{ nullptr };
+
+
         GameObject* m_pHealthDisplay{nullptr};
         GameObject* m_pScoreDisplay{nullptr};
         
