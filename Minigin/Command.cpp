@@ -1,6 +1,8 @@
 #include "Command.h"
 #include "InputManager.h"
 #include <iostream>
+#include "Subject.h"
+#include "HealthComponent.h"
 
 using namespace dae;
 
@@ -42,4 +44,24 @@ void MoveCommand::Execute(float deltaTime)
 		}
 		m_pGameObject->GetTransform()->SetLocalPosition(currentPos);
 	}
+}
+
+void DebugEventCommand::Execute(float /*deltaTime*/)
+{
+	std::cout << "DebugEventCommand executed" << std::endl;
+
+	switch (m_EventId)
+	{
+	case dae::Observer::EventId::ACTOR_DIED:
+		break;
+	case dae::Observer::EventId::HEALTH_UPDATED:
+		m_pGameObject->GetComponent<HealthComponent>()->DoDamage(m_Amount);
+		break;
+	case dae::Observer::EventId::SCORE_UPDATED:
+		break;
+	default:
+		break;
+	}
+
+	Subject::GetInstance().Notify(m_pGameObject, m_EventId);
 }
