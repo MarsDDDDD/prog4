@@ -1,7 +1,7 @@
 #include "Command.h"
 #include "InputManager.h"
 #include <iostream>
-#include "Subject.h"
+#include "Event.h"
 #include "HealthComponent.h"
 #include "ScoreComponent.h"
 
@@ -64,6 +64,4 @@ void DebugEventCommand::Execute(float /*deltaTime*/)
 	default:
 		break;
 	}
-
-	Subject::GetInstance().Notify(m_pGameObject, m_EventId);
 }

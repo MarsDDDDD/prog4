@@ -4,7 +4,6 @@
 
 namespace dae
 {
-	class TextComponent;
 
 	class ScoreComponent : public BaseComponent
 	{
@@ -21,7 +20,6 @@ namespace dae
 
 		//Setters
 		void SetScore(int newScore);
-		void SetTextComponent(TextComponent* pTextComponent);
 
 		//Getters
 		int GetScore() const;
@@ -36,7 +34,6 @@ namespace dae
 
 		int m_CurrentScore{ 0 };
 
-		TextComponent* m_pTextComponent{ nullptr };
 	};
 
 }

@@ -4,7 +4,6 @@
 
 namespace dae
 {
-	class TextComponent;
 
 	class HealthComponent : public BaseComponent
 	{
@@ -22,7 +21,6 @@ namespace dae
 		//Setters
 		void SetMaxHealth(int newMaxHealth);
 		void SetHealth(int newHealth);
-		void SetTextComponent(TextComponent* pTextComponent);
 
 		//Getters
 		int GetHealth() const;
@@ -38,7 +36,6 @@ namespace dae
 		int m_MaxHealth{ 5 };
 		int m_CurrentHealth{ 5 };
 		
-		TextComponent* m_pTextComponent{ nullptr };
 	};
 
 }

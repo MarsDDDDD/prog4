@@ -1,7 +1,6 @@
 #include "HealthComponent.h"
-#include "TextComponent.h"
 #include "Observer.h"
-#include "Subject.h"
+#include "Event.h"
 #include "GameObject.h"
 #include <iostream>
 
@@ -15,10 +14,6 @@ namespace dae
 
 	void HealthComponent::Update(float /*deltaTime*/)
 	{
-		if (m_pTextComponent)
-		{
-			m_pTextComponent->SetText(std::to_string(m_CurrentHealth));
-		}
 	}
 
 	void HealthComponent::SetMaxHealth(int amount)
@@ -43,28 +38,18 @@ namespace dae
 		HealthUpdated();
 	}
 
-	void HealthComponent::SetTextComponent(TextComponent* pTextComponent)
-	{
-		m_pTextComponent = pTextComponent;
-	}
-
 	void  HealthComponent::HealthUpdated()
 	{
 		if (m_CurrentHealth <= 0)
 		{
 			m_CurrentHealth = 0;
-			Subject::GetInstance().Notify(GetGameObject(), Observer::EventId::ACTOR_DIED);
+			Event::GetInstance().Notify(GetGameObject(), Observer::EventId::ACTOR_DIED);
 		}
 		else
 		{
-			Subject::GetInstance().Notify(GetGameObject(), Observer::EventId::HEALTH_UPDATED);
+			Event::GetInstance().Notify(GetGameObject(), Observer::EventId::HEALTH_UPDATED);
 		}
 		std::cout << "Current health: " << m_CurrentHealth << std::endl;
-
-		if (m_pTextComponent)
-		{
-			m_pTextComponent->SetText(std::to_string(m_CurrentHealth));
-		}
 	}
 
 }
