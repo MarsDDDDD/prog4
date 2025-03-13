@@ -12,6 +12,7 @@ namespace dae
 	{
 		friend Scene& SceneManager::CreateScene(const std::string& name);
 	public:
+		GameObject* CreateGameObject();
 		void Add(std::unique_ptr<GameObject> object);
 		void Remove(GameObject* object);
 		void RemoveAll();

@@ -11,6 +11,12 @@ Scene::Scene(const std::string& name) : m_name(name) {}
 
 Scene::~Scene() = default;
 
+GameObject* dae::Scene::CreateGameObject()
+{
+	auto pGameObject{ std::make_unique<GameObject>() };
+	return nullptr;
+}
+
 void Scene::Add(std::unique_ptr<GameObject> object)
 {
 	m_objects.emplace_back(std::move(object));
