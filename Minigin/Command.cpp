@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Subject.h"
 #include "HealthComponent.h"
+#include "ScoreComponent.h"
 
 using namespace dae;
 
@@ -58,6 +59,7 @@ void DebugEventCommand::Execute(float /*deltaTime*/)
 		m_pGameObject->GetComponent<HealthComponent>()->DoDamage(m_Amount);
 		break;
 	case dae::Observer::EventId::SCORE_UPDATED:
+		m_pGameObject->GetComponent<ScoreComponent>()->AddScore(m_Amount);
 		break;
 	default:
 		break;
