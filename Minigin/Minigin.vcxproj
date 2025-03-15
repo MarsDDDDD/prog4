@@ -209,8 +209,10 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AchievementObserver.h" />
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Command.h" />
+    <ClInclude Include="CSteamAchievements.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FPSComponent.h" />
     <ClInclude Include="GameObject.h" />
@@ -233,8 +235,10 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(Out
     <ClInclude Include="XBoxController.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AchievementObserver.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="Command.cpp" />
+    <ClCompile Include="CSteamAchievements.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />

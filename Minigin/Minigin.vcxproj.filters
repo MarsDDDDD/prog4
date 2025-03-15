@@ -81,14 +81,20 @@
     <ClInclude Include="HealthComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="HudObserver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ScoreComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Event.h">
+    <ClInclude Include="CSteamAchievements.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Observer</Filter>
+    </ClInclude>
+    <ClInclude Include="HudObserver.h">
+      <Filter>Observer</Filter>
+    </ClInclude>
+    <ClInclude Include="AchievementObserver.h">
+      <Filter>Observer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -146,14 +152,20 @@
     <ClCompile Include="HealthComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="HudObserver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ScoreComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Event.cpp">
+    <ClCompile Include="CSteamAchievements.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>Observer</Filter>
+    </ClCompile>
+    <ClCompile Include="HudObserver.cpp">
+      <Filter>Observer</Filter>
+    </ClCompile>
+    <ClCompile Include="AchievementObserver.cpp">
+      <Filter>Observer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
