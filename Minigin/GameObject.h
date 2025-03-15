@@ -12,10 +12,9 @@ namespace dae
 {
     class BaseComponent;
 
-    class GameObject final : public std::enable_shared_from_this<GameObject>
+    class GameObject final
     {
     public:
-
         GameObject();
         virtual ~GameObject();
         GameObject(const GameObject& other) = delete;
@@ -48,8 +47,8 @@ namespace dae
 
         // Hierarchy
         void SetParent(GameObject* parent, bool keepWorldPosition = true);
-        std::weak_ptr<GameObject> GetParent() const { return m_parent; }
-        const std::vector<std::shared_ptr<GameObject>>& GetChildren() const { return m_Children; }
+        GameObject* GetParent() const { return m_parent; }
+        const std::vector<GameObject*>& GetChildren() const { return m_pChildren; }
         void RemoveAllChildren();
         void RemoveChild(GameObject* child);
 
@@ -63,8 +62,8 @@ namespace dae
         std::queue<std::type_index> m_ComponentTypesToRemove;
 
         // Parent/Child
-        std::weak_ptr<GameObject> m_parent;
-        std::vector<std::shared_ptr<GameObject>> m_Children;
+        GameObject* m_parent{nullptr};
+        std::vector<GameObject*> m_pChildren;
 
         bool IsDescendant(GameObject* potentialDescendant) const;
     };

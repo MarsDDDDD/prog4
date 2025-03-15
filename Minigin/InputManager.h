@@ -24,7 +24,10 @@ namespace dae
 		};
 
 		void AddControllerCommand(XBoxController::XBoxButton button, unsigned int controllerID, InputType type, std::unique_ptr<Command> pCommand);
+		void RemoveControllerCommand(XBoxController::XBoxButton button);
 		void AddKeyboardCommand(unsigned int keyboardKey, InputType type, std::unique_ptr<Command> pCommand);
+
+		void RemoveKeyboardCommand(unsigned int key);
 
 	private:
 		struct InputDataController
