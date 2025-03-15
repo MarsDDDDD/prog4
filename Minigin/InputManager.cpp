@@ -75,12 +75,8 @@ bool InputManager::ProcessInput(float deltaTime)
 			{
 				if (mapPair.first.type == InputType::OnPress && controller->IsDown(mapPair.first.button))
 				{
-					ControllerButtonState buttonState{ mapPair.first.controllerID, mapPair.first.button };
-					if (m_HeldButtons.find(buttonState) == m_HeldButtons.end())
-					{
-						mapPair.second->Execute(deltaTime);
-						m_HeldButtons.insert(buttonState);
-					}
+					mapPair.second->Execute(deltaTime);
+
 				}
 				else if (mapPair.first.type == InputType::OnHold && controller->IsPressed(mapPair.first.button))
 				{
@@ -89,8 +85,6 @@ bool InputManager::ProcessInput(float deltaTime)
 				else if (mapPair.first.type == InputType::OnRelease && controller->IsUp(mapPair.first.button))
 				{
 					mapPair.second->Execute(deltaTime);
-					ControllerButtonState buttonState{ mapPair.first.controllerID, mapPair.first.button };
-					m_HeldButtons.erase(buttonState);
 				}
 			}
 		}
