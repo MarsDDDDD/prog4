@@ -6,7 +6,7 @@
 #include "ScoreComponent.h"
 
 using namespace dae;
-
+//Movement
 void MoveCommand::Execute(float deltaTime)
 {
 	switch (m_Direction)

@@ -24,7 +24,7 @@ namespace dae
 		Left,
 		Right
 	};
-
+	// Combined move commands into 1 class
 	class MoveCommand final : public Command
 	{
 	public:
