@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Observer.h"
 
 namespace dae
 {
@@ -9,77 +10,54 @@ namespace dae
 		explicit Command() = default;
 		virtual ~Command() = default;
 		Command(const Command& other) = delete;
-		Command& operator=(const Command& rhs) = delete;
+		Command& operator=(const Command& other) = delete;
 		Command(Command&& other) = delete;
-		Command& operator=(Command&& rhs) = delete;
-
+		Command& operator=(Command&& other) = delete;
 
 		virtual void Execute(float deltaTime = 0.f) = 0;
 	};
 
-	class MoveUpCommand final : public Command
+	enum class Direction
+	{
+		Up,
+		Down,
+		Left,
+		Right
+	};
+	// Combined move commands into 1 class
+	class MoveCommand final : public Command
 	{
 	public:
-		explicit MoveUpCommand(GameObject* pGameObject, float speed)
-			:m_pGameObject{ pGameObject }
+		explicit MoveCommand(GameObject* pGameObject, float speed, Direction direction)
+			: m_pGameObject{ pGameObject }
 			, m_Speed{ speed }
+			, m_Direction{ direction }
 		{
 		}
 
 		void Execute(float deltaTime) override;
+
 	private:
 		GameObject* m_pGameObject{};
 		float m_Speed{};
+		Direction m_Direction{};
 	};
 
-	class MoveDownCommand final : public Command
+	class DebugEventCommand final : public Command
 	{
 	public:
-		explicit MoveDownCommand(GameObject* pGameObject, float speed)
-			:m_pGameObject{ pGameObject }
-			, m_Speed{ speed }
+		explicit DebugEventCommand(GameObject* pGameObject, int amount, Observer::EventId EventId)
+			: m_pGameObject{ pGameObject }
+			, m_Amount{ amount }
+			, m_EventId{ EventId }
 		{
 		}
 
 		void Execute(float deltaTime) override;
+
 	private:
 		GameObject* m_pGameObject{};
-		float m_Speed{};
-	};
-
-	class MoveLeftCommand final : public Command
-	{
-	public:
-		explicit MoveLeftCommand(GameObject* pGameObject, float speed)
-			:m_pGameObject{ pGameObject }
-			, m_Speed{ speed }
-		{
-		}
-
-		void Execute(float deltaTime) override;
-	private:
-		GameObject* m_pGameObject{};
-		float m_Speed{};
-	};
-
-	class MoveRightCommand final : public Command
-	{
-	public:
-		explicit MoveRightCommand(GameObject* pGameObject, float speed)
-			:m_pGameObject{ pGameObject }
-			, m_Speed{ speed }
-		{
-		}
-
-		void Execute(float deltaTime) override;
-	private:
-		GameObject* m_pGameObject{};
-		float m_Speed{};
+		int m_Amount{};
+		Observer::EventId m_EventId{};
 	};
 }
-
-// These commands need to be registered with the Input manager
-// The input manager keeps track of all active commands
-// Checks if the input for the command has been executed by the user
-// Calls the Execute method on the registered command
-// Don't forget to unregister!
