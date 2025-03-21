@@ -28,6 +28,17 @@ public:
 
 	bool RequestStats();
 	bool SetAchievement(const char* ID);
+	//Check if achievement is already unlocked
+	bool IsAchieved(const char* ID) {
+		for (int i = 0; i < m_iNumAchievements; i++)
+		{
+			if (strcmp(m_pAchievements[i].m_pchAchievementID, ID) == 0)
+			{
+				return m_pAchievements[i].m_bAchieved;
+			}
+		}
+		return false;
+	}
 
 	STEAM_CALLBACK(CSteamAchievements, OnUserStatsReceived, UserStatsReceived_t,
 		m_CallbackUserStatsReceived);

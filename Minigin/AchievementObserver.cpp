@@ -22,6 +22,11 @@ void AchievementObserver::Notify(const GameObject* actor, EventId event)
 	{
 		if (actor->GetComponent<ScoreComponent>()->GetScore() >= 500)
 		{
+			// check if the achievement is already unlocked
+			if (m_SteamAchievements->IsAchieved("ACH_WIN_ONE_GAME"))
+			{
+				return;
+			}
 			Unlock("ACH_WIN_ONE_GAME");
 			std::cout << "Achievement unlocked: Winner" << std::endl;
 		}
