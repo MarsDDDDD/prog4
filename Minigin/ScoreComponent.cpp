@@ -33,9 +33,9 @@ namespace dae
 	}
 
 
-	void  ScoreComponent::ScoreUpdated()
+	void ScoreComponent::ScoreUpdated()
 	{
-		Event::GetInstance().Notify(GetGameObject(), Observer::EventId::SCORE_UPDATED);
+		Notify(GetGameObject(), Observer::EventId::SCORE_UPDATED);
 		std::cout << "Current Score: " << m_CurrentScore << std::endl;
 	}
 

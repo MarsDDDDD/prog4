@@ -65,11 +65,17 @@ void Scene::FixedUpdate(float fixedTimeStep)
 	}
 }
 
-
 void Scene::Render() const
 {
 	for (const auto& object : m_objects)
 	{
 		object->Render();
 	}
+}
+
+// Add the implementation for the new method
+
+void Scene::AddObserver(std::shared_ptr<Observer> observer)
+{
+    m_Observers.push_back(observer);
 }

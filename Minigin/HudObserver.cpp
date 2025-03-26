@@ -37,7 +37,7 @@ namespace dae
 
     void HudObserver::SetActor(GameObject* actor)
     {
-		m_pActor = actor;
+        m_pActor = actor;
     }
     
     void HudObserver::SetHealthDisplay(GameObject* healthDisplay)

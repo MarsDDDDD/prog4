@@ -1,39 +1,26 @@
 #pragma once
 #include "BaseComponent.h"
-
+#include "Subject.h"
 
 namespace dae
 {
+    class ScoreComponent : public BaseComponent, public Subject
+    {
+    public:
+        explicit ScoreComponent(GameObject* pOwner);
+        ~ScoreComponent() override = default;
 
-	class ScoreComponent : public BaseComponent
-	{
-	public:
-		explicit ScoreComponent(GameObject* pOwner);
-		~ScoreComponent() override = default;
+        void Update(float deltaTime) override;
 
-		ScoreComponent(const ScoreComponent& other) = delete;
-		ScoreComponent(ScoreComponent&& other) = delete;
-		ScoreComponent& operator=(const ScoreComponent& other) = delete;
-		ScoreComponent& operator=(ScoreComponent&& other) = delete;
+        //Setters
+        void SetScore(int newScore);
+        //Getters
+        int GetScore() const;
 
-		void Update(float deltaTime) override;
+        void AddScore(int amount);
 
-		//Setters
-		void SetScore(int newScore);
-
-		//Getters
-		int GetScore() const;
-
-		void AddScore(int amount);
-
-
-	private:
-
-		void ScoreUpdated();
-
-
-		int m_CurrentScore{ 0 };
-
-	};
-
+    private:
+        void ScoreUpdated();
+        int m_CurrentScore{ 0 };
+    };
 }

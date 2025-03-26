@@ -21,10 +21,8 @@ namespace dae
 
     private:
         GameObject* m_pActor{ nullptr };
-
-
-        GameObject* m_pHealthDisplay{nullptr};
-        GameObject* m_pScoreDisplay{nullptr};
+        GameObject* m_pHealthDisplay{ nullptr };
+        GameObject* m_pScoreDisplay{ nullptr };
         
         // Helper methods
         void UpdateHealthText(const GameObject* actor);

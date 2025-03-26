@@ -3,6 +3,7 @@
 namespace dae
 {
 	class GameObject;
+	class Subject;
 
 	class Observer
 	{
