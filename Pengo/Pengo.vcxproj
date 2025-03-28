@@ -159,7 +159,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DebugEventCommand.cpp" />
+    <ClCompile Include="FPSComponent.cpp" />
+    <ClCompile Include="HealthComponent.cpp" />
+    <ClCompile Include="HudObserver.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MoveCommand.cpp" />
+    <ClCompile Include="ScoreComponent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DebugEventCommand.h" />
+    <ClInclude Include="FPSComponent.h" />
+    <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="HudObserver.h" />
+    <ClInclude Include="MoveCommand.h" />
+    <ClInclude Include="ScoreComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
