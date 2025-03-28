@@ -27,6 +27,8 @@ static_assert(__cplusplus >= 202002L, "C++20 required");
 #include "InputManager.h"
 #include "HudObserver.h"
 #include "Event.h"
+#include "MoveCommand.h"
+#include "DebugEventCommand.h"
 
 namespace fs = std::filesystem;
 using namespace dae;
