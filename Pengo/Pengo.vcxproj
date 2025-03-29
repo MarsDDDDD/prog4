@@ -173,6 +173,7 @@
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HudObserver.h" />
     <ClInclude Include="MoveCommand.h" />
+    <ClInclude Include="PengoGame.h" />
     <ClInclude Include="ScoreComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

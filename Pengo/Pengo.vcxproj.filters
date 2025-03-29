@@ -59,5 +59,8 @@
     <ClInclude Include="HudObserver.h">
       <Filter>Observers</Filter>
     </ClInclude>
+    <ClInclude Include="PengoGame.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -27,7 +27,9 @@ static_assert(__cplusplus >= 202002L, "C++20 required");
 #include "InputManager.h"
 #include "HudObserver.h"
 #include "Event.h"
-#include "MoveCommand.h"
+// Add GridComponent and GridMoveCommand
+#include "GridComponent.h"
+#include "GridMoveCommand.h"
 #include "DebugEventCommand.h"
 
 namespace fs = std::filesystem;
@@ -35,6 +37,19 @@ using namespace dae;
 
 void load()
 {
+    // Define grid parameters
+    // Screen size is 640x480, adjust grid to fit properly
+    const int gridWidth = 13;
+    const int gridHeight = 15;
+    // Calculate cell size to fit the grid within the screen
+    // Leave some margin for UI elements
+    const float cellSize = 30.0f; // Reduced from 40.0f to fit the screen
+
+    // Calculate grid offset to center it on screen horizontally
+    // and provide space for UI vertically
+    //const float gridOffsetX = (640 - gridWidth * cellSize) / 2;
+    //const float gridOffsetY = 100; // Space for UI elements at top
+
     auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
     auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 24);
 
@@ -46,13 +61,20 @@ void load()
     auto textureComponent = std::make_unique<dae::TextureComponent>(background.get(), backgroundTexture);
     background->AddComponent(std::move(textureComponent));
     scene.Add(std::move(background));
+    
     // Add char1
     auto char1Texture = dae::ResourceManager::GetInstance().LoadTexture("char1.png");
     auto char1 = std::make_unique<dae::GameObject>();
-    char1->SetLocalPosition(320, 240);
+    char1->SetLocalPosition(0, 0);
 
     auto char1TextureComponent = std::make_unique<dae::TextureComponent>(char1.get(), char1Texture);
     char1->AddComponent(std::move(char1TextureComponent));
+
+    // Add grid component to char1 with offset
+    auto char1GridComponent = std::make_unique<GridComponent>(char1.get(), gridWidth, gridHeight, cellSize);
+    // Set initial grid position
+    char1GridComponent->SetGridPosition(4, 6);
+    char1->AddComponent(std::move(char1GridComponent));
 
     // Add health component
     auto char1HealthComponent = std::make_unique<HealthComponent>(char1.get());
@@ -61,12 +83,15 @@ void load()
     auto char1ScoreComponent = std::make_unique<ScoreComponent>(char1.get());
     char1->AddComponent(std::move(char1ScoreComponent));
 
-
-    // Input
-    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadUp, 0, InputManager::InputType::OnHold, std::make_unique<MoveCommand>(char1.get(), 100.f, Direction::Up));
-    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadDown, 0, InputManager::InputType::OnHold, std::make_unique<MoveCommand>(char1.get(), 100.f, Direction::Down));
-    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadLeft, 0, InputManager::InputType::OnHold, std::make_unique<MoveCommand>(char1.get(), 100.f, Direction::Left));
-    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadRight, 0, InputManager::InputType::OnHold, std::make_unique<MoveCommand>(char1.get(), 100.f, Direction::Right));
+    // Input with GridMoveCommand - changed from OnHold to OnPress
+    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadUp, 0, InputManager::InputType::OnPress, 
+                                                    std::make_unique<GridMoveCommand>(char1.get(), Direction::Up));
+    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadDown, 0, InputManager::InputType::OnPress, 
+                                                    std::make_unique<GridMoveCommand>(char1.get(), Direction::Down));
+    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadLeft, 0, InputManager::InputType::OnPress, 
+                                                    std::make_unique<GridMoveCommand>(char1.get(), Direction::Left));
+    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadRight, 0, InputManager::InputType::OnPress, 
+                                                    std::make_unique<GridMoveCommand>(char1.get(), Direction::Right));
     // Damage self
     InputManager::GetInstance().AddKeyboardCommand('u', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(char1.get(), 1, Observer::EventId::HEALTH_UPDATED));
     // Add score
@@ -79,10 +104,16 @@ void load()
     // Add char2
     auto char2Texture = dae::ResourceManager::GetInstance().LoadTexture("char2.png");
     auto char2 = std::make_unique<dae::GameObject>();
-    char2->SetLocalPosition(320, 340);
+    char2->SetLocalPosition(0, 0);
 
     auto char2TextureComponent = std::make_unique<dae::TextureComponent>(char2.get(), char2Texture);
     char2->AddComponent(std::move(char2TextureComponent));
+
+    // Add grid component to char2
+    auto char2GridComponent = std::make_unique<GridComponent>(char2.get(), gridWidth, gridHeight, cellSize);
+    // Set initial grid position
+    char2GridComponent->SetGridPosition(8, 8);
+    char2->AddComponent(std::move(char2GridComponent));
 
     // Add health component
     auto healthComponent = std::make_unique<HealthComponent>(char2.get());
@@ -91,12 +122,15 @@ void load()
     auto scoreComponent = std::make_unique<ScoreComponent>(char2.get());
     char2->AddComponent(std::move(scoreComponent));
 
-
-    // Input
-    InputManager::GetInstance().AddKeyboardCommand('w', InputManager::InputType::OnHold, std::make_unique<MoveCommand>(char2.get(), 200.f, Direction::Up));
-    InputManager::GetInstance().AddKeyboardCommand('s', InputManager::InputType::OnHold, std::make_unique<MoveCommand>(char2.get(), 200.f, Direction::Down));
-    InputManager::GetInstance().AddKeyboardCommand('a', InputManager::InputType::OnHold, std::make_unique<MoveCommand>(char2.get(), 200.f, Direction::Left));
-    InputManager::GetInstance().AddKeyboardCommand('d', InputManager::InputType::OnHold, std::make_unique<MoveCommand>(char2.get(), 200.f, Direction::Right));
+    // Input with GridMoveCommand - changed from OnHold to OnPress
+    InputManager::GetInstance().AddKeyboardCommand('w', InputManager::InputType::OnPress, 
+                                                std::make_unique<GridMoveCommand>(char2.get(), Direction::Up));
+    InputManager::GetInstance().AddKeyboardCommand('s', InputManager::InputType::OnPress, 
+                                                std::make_unique<GridMoveCommand>(char2.get(), Direction::Down));
+    InputManager::GetInstance().AddKeyboardCommand('a', InputManager::InputType::OnPress, 
+                                                std::make_unique<GridMoveCommand>(char2.get(), Direction::Left));
+    InputManager::GetInstance().AddKeyboardCommand('d', InputManager::InputType::OnPress, 
+                                                std::make_unique<GridMoveCommand>(char2.get(), Direction::Right));
     // Damage self
     InputManager::GetInstance().AddKeyboardCommand('j', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(char2.get(), 1, Observer::EventId::HEALTH_UPDATED));
     // Add score
@@ -128,11 +162,11 @@ void load()
     fpsCounter->SetLocalPosition(10, 10);
     scene.Add(std::move(fpsCounter));
 
-    // Instruction text
+    // Instruction text - Updated to reflect press instead of hold
     auto instructionText1 = std::make_unique<dae::GameObject>();
     font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 15);
 
-    auto instructionTextComponent1 = std::make_unique<dae::TextComponent>(instructionText1.get(), "Char1: Use D-Pad to move.", font);
+    auto instructionTextComponent1 = std::make_unique<dae::TextComponent>(instructionText1.get(), "Char1: Press D-Pad to move on grid.", font);
     instructionText1->AddComponent(std::move(instructionTextComponent1));
 
     instructionText1->SetLocalPosition(10, 50); // Position below the FPS counter
@@ -140,7 +174,7 @@ void load()
 
     auto instructionText2 = std::make_unique<dae::GameObject>();
 
-    auto instructionTextComponent2 = std::make_unique<dae::TextComponent>(instructionText2.get(), "Char2: Use WASD to move, J to inflict damage on self, K and L to add score.", font);
+    auto instructionTextComponent2 = std::make_unique<dae::TextComponent>(instructionText2.get(), "Char2: Press WASD to move on grid, J to inflict damage on self, K and L to add score.", font);
     instructionText2->AddComponent(std::move(instructionTextComponent2));
 
     instructionText2->SetLocalPosition(10, 70); // Position below the FPS counter

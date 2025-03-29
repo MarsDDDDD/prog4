@@ -4,6 +4,14 @@
 
 namespace dae
 {
+	enum class Direction
+	{
+		Up,
+		Down,
+		Left,
+		Right
+	};
+
 	class Command
 	{
 	public:
