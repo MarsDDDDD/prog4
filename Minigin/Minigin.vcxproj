@@ -193,8 +193,6 @@
     <ClInclude Include="Command.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GridComponent.h" />
-    <ClInclude Include="GridMoveCommand.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="Observer.h" />
@@ -216,8 +214,6 @@
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GridComponent.cpp" />
-    <ClCompile Include="GridMoveCommand.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Minigin.cpp" />
     <ClCompile Include="Renderer.cpp" />

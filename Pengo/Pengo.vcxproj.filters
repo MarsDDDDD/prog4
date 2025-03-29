@@ -39,6 +39,12 @@
     <ClCompile Include="MoveCommand.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
+    <ClCompile Include="GridComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GridMoveCommand.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugEventCommand.h">
@@ -60,6 +66,12 @@
       <Filter>Observers</Filter>
     </ClInclude>
     <ClInclude Include="PengoGame.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GridMoveCommand.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GridComponent.h">
       <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>

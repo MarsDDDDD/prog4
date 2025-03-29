@@ -161,6 +161,8 @@
   <ItemGroup>
     <ClCompile Include="DebugEventCommand.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
+    <ClCompile Include="GridComponent.cpp" />
+    <ClCompile Include="GridMoveCommand.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="HudObserver.cpp" />
     <ClCompile Include="main.cpp" />
@@ -170,6 +172,8 @@
   <ItemGroup>
     <ClInclude Include="DebugEventCommand.h" />
     <ClInclude Include="FPSComponent.h" />
+    <ClInclude Include="GridComponent.h" />
+    <ClInclude Include="GridMoveCommand.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HudObserver.h" />
     <ClInclude Include="MoveCommand.h" />

@@ -50,9 +50,6 @@
     <ClInclude Include="Event.h">
       <Filter>Observer</Filter>
     </ClInclude>
-    <ClInclude Include="GridComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="Minigin.h">
       <Filter>Engine Files</Filter>
     </ClInclude>
@@ -79,9 +76,6 @@
     </ClInclude>
     <ClInclude Include="Font.h">
       <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GridMoveCommand.h">
-      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -133,14 +127,8 @@
     <ClCompile Include="Subject.cpp">
       <Filter>Observer</Filter>
     </ClCompile>
-    <ClCompile Include="GridComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="Event.cpp">
       <Filter>Observer</Filter>
-    </ClCompile>
-    <ClCompile Include="GridMoveCommand.cpp">
-      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
