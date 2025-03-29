@@ -1,17 +1,10 @@
 #pragma once
 #include "GameObject.h"
 #include "Observer.h"
+#include "Direction.h"
 
 namespace dae
 {
-	enum class Direction
-	{
-		Up,
-		Down,
-		Left,
-		Right
-	};
-
 	class Command
 	{
 	public:
