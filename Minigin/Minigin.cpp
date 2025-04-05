@@ -10,7 +10,6 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include <steam_api.h>
 
 #include <chrono>
 #include <thread>
@@ -140,8 +139,8 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	while (doContinue)
 	{
-		// steam
-		SteamAPI_RunCallbacks(); 
+		//// steam
+		//SteamAPI_RunCallbacks(); 
 		// Calculate delta time.
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count(); // deltaTime in seconds.
