@@ -8,9 +8,11 @@
     <Filter Include="State">
       <UniqueIdentifier>{752523a3-ab6a-48f5-92e9-f30b061b1d92}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{16d67c82-175c-4fa7-ad36-a89f1227c7ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AudioClip.h" />
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Direction.h" />
@@ -18,31 +20,45 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="LoggingSoundSystem.h" />
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="XBoxController.h" />
-    <ClInclude Include="NullSoundSystem.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="SDL_SoundSystem.h" />
-    <ClInclude Include="ServiceLocator.h" />
     <ClInclude Include="Singleton.h" />
-    <ClInclude Include="SoundEventQueue.h" />
-    <ClInclude Include="SoundSystem.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="TextComponent.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TextureComponent.h" />
-    <ClInclude Include="ThreadedSoundSystem.h" />
     <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="AudioClip.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="NullSoundSystem.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SDLSoundSystem.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="ServiceLocator.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEventQueue.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundSystem.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadedSoundSystem.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="LoggingSoundSystem.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioClip.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BaseComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -61,13 +77,7 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LoggingSoundSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Minigin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NullSoundSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
@@ -82,15 +92,6 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SDL_SoundSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ServiceLocator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundEventQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Subject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,14 +104,32 @@
     <ClCompile Include="TextureComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadedSoundSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="XBoxController.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioClip.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="NullSoundSystem.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggingSoundSystem.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SDLSoundSystem.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEventQueue.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="ServiceLocator.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadedSoundSystem.cpp">
+      <Filter>Sound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

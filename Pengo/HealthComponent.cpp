@@ -2,6 +2,7 @@
 #include "Observer.h"
 #include "GameObject.h"
 #include <iostream>
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -34,6 +35,9 @@ namespace dae
     {
         m_CurrentHealth -= amount;
         HealthUpdated();
+		//play sound
+		ServiceLocator::GetSoundSystem().Play(1, 0.5f);
+
     }
 
     void HealthComponent::HealthUpdated()

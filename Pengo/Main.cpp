@@ -27,16 +27,23 @@ static_assert(__cplusplus >= 202002L, "C++20 required");
 #include "InputManager.h"
 #include "HudObserver.h"
 #include "Event.h"
-// Add GridComponent and GridMoveCommand
 #include "GridComponent.h"
 #include "GridMoveCommand.h"
 #include "DebugEventCommand.h"
+
+#include "ServiceLocator.h"
+#include "LoggingSoundSystem.h"
+#include "SDLSoundSystem.h"
+
 
 namespace fs = std::filesystem;
 using namespace dae;
 
 void load()
 {
+	// Load the sound for the game
+    ResourceManager::GetInstance().LoadSound(1, "Death.mp3");
+
     // Define grid parameters
     // Screen size is 640x480, adjust grid to fit properly
     const int gridWidth = 13;

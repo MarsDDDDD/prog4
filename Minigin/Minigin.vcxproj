@@ -231,7 +231,7 @@ xcopy "$(ProjectDir)..\3rdParty\SDL2_mixer-2.8.1\lib\x64\*.dll" "$(OutDir)" /R /
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="SDL_SoundSystem.h" />
+    <ClInclude Include="SDLSoundSystem.h" />
     <ClInclude Include="ServiceLocator.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SoundEventQueue.h" />
@@ -259,7 +259,7 @@ xcopy "$(ProjectDir)..\3rdParty\SDL2_mixer-2.8.1\lib\x64\*.dll" "$(OutDir)" /R /
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="SDL_SoundSystem.cpp" />
+    <ClCompile Include="SDLSoundSystem.cpp" />
     <ClCompile Include="ServiceLocator.cpp" />
     <ClCompile Include="SoundEventQueue.cpp" />
     <ClCompile Include="Subject.cpp" />

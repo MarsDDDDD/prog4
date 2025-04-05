@@ -15,7 +15,7 @@
 #include <thread>
 
 #include "ServiceLocator.h"
-#include "SDL_SoundSystem.h"
+#include "SDLSoundSystem.h"
 #include "LoggingSoundSystem.h"
 #include "ThreadedSoundSystem.h"
 
@@ -105,7 +105,7 @@ void dae::Minigin::InitializeSoundSystem()
 	ServiceLocator::RegisterSoundSystem(
 		std::make_unique<LoggingSoundSystem>(
 			std::make_unique<ThreadedSoundSystem>(
-				std::make_unique<SDL_SoundSystem>()
+				std::make_unique<SDLSoundSystem>()
 			)
 		)
 	);
@@ -113,7 +113,7 @@ void dae::Minigin::InitializeSoundSystem()
 	// In release mode, use just the threaded sound system
 	ServiceLocator::RegisterSoundSystem(
 		std::make_unique<ThreadedSoundSystem>(
-			std::make_unique<SDL_SoundSystem>()
+			std::make_unique<SDLSoundSystem>()
 		)
 	);
 #endif
