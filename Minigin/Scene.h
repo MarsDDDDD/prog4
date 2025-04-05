@@ -8,6 +8,7 @@ namespace dae
 {
 	class FPSComponent;
 	class GameObject;
+	class Observer;
 	class Scene final
 	{
 		friend Scene& SceneManager::CreateScene(const std::string& name);
@@ -20,6 +21,8 @@ namespace dae
 		void Update(float deltaTime); // Modified Update method
 		void FixedUpdate(float fixedTimeStep); // New FixedUpdate method
 		void Render() const;
+
+		void AddObserver(std::shared_ptr<Observer> observer);
 
 		~Scene();
 		Scene(const Scene& other) = delete;
@@ -36,6 +39,7 @@ namespace dae
 		static unsigned int m_idCounter;
 
 		std::vector<GameObject*> m_objectsToRemove;
+		std::vector<std::shared_ptr<Observer>> m_Observers;
 	};
 
 }
