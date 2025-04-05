@@ -1,78 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Components">
+    <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Commands">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Main">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Observers">
-      <UniqueIdentifier>{db3888f6-0b90-4c4a-8d41-ecbdeed6509b}</UniqueIdentifier>
+    <Filter Include="Components">
+      <UniqueIdentifier>{df783ba1-90f6-4319-8948-468f2d0a9df4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FPSComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="HealthComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="HudObserver.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="ScoreComponent.cpp">
-      <Filter>Components</Filter>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DebugEventCommand.cpp">
-      <Filter>Commands</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveCommand.cpp">
-      <Filter>Commands</Filter>
+    <ClCompile Include="FPSComponent.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GridComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GridMoveCommand.cpp">
-      <Filter>Components</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HudObserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreComponent.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DebugEventCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="ScoreComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="HealthComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="HudObserver.h">
-      <Filter>Observers</Filter>
-    </ClInclude>
-    <ClInclude Include="PengoGame.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="GridMoveCommand.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="GridComponent.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
+    <ClInclude Include="HudObserver.h" />
+    <ClInclude Include="DebugEventCommand.h" />
+    <ClInclude Include="FPSComponent.h" />
+    <ClInclude Include="GridComponent.h" />
+    <ClInclude Include="GridMoveCommand.h" />
+    <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="MoveCommand.h" />
+    <ClInclude Include="PengoGame.h" />
+    <ClInclude Include="ScoreComponent.h" />
   </ItemGroup>
 </Project>

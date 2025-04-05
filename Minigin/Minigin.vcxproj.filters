@@ -1,135 +1,116 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Components">
-      <UniqueIdentifier>{0b1e828a-5146-407d-a885-159ad3fc364b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input">
-      <UniqueIdentifier>{c8b0caae-7c3d-44fb-8d2f-3b888679d782}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Observer">
-      <UniqueIdentifier>{eaee0dde-69f0-479e-8f72-a334ed8a0e46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine Files">
+    <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="State">
+      <UniqueIdentifier>{752523a3-ab6a-48f5-92e9-f30b061b1d92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BaseComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="TextComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="TransformComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Command.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="XBoxController.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Observer.h">
-      <Filter>Observer</Filter>
-    </ClInclude>
-    <ClInclude Include="Subject.h">
-      <Filter>Observer</Filter>
-    </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Observer</Filter>
-    </ClInclude>
-    <ClInclude Include="Minigin.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture2D.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Engine Files</Filter>
-    </ClInclude>
+    <ClInclude Include="AudioClip.h" />
+    <ClInclude Include="BaseComponent.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="Direction.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="LoggingSoundSystem.h" />
+    <ClInclude Include="Minigin.h" />
+    <ClInclude Include="XBoxController.h" />
+    <ClInclude Include="NullSoundSystem.h" />
+    <ClInclude Include="Observer.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SDL_SoundSystem.h" />
+    <ClInclude Include="ServiceLocator.h" />
+    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="SoundEventQueue.h" />
+    <ClInclude Include="SoundSystem.h" />
+    <ClInclude Include="Subject.h" />
+    <ClInclude Include="TextComponent.h" />
+    <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="TextureComponent.h" />
+    <ClInclude Include="ThreadedSoundSystem.h" />
+    <ClInclude Include="TransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Engine Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Engine Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
-      <Filter>Engine Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Engine Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Engine Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>Engine Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Engine Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Minigin.cpp">
-      <Filter>Engine Files</Filter>
+    <ClCompile Include="AudioClip.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BaseComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="TextComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="XBoxController.cpp">
-      <Filter>Input</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Command.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Subject.cpp">
-      <Filter>Observer</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Event.cpp">
-      <Filter>Observer</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggingSoundSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minigin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NullSoundSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SDL_SoundSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ServiceLocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEventQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Subject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadedSoundSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XBoxController.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

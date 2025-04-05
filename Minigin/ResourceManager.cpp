@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "Texture2D.h"
 #include "Font.h"
+#include "ServiceLocator.h"
 
 namespace fs = std::filesystem;
 
@@ -54,4 +55,14 @@ void dae::ResourceManager::UnloadUnusedResources()
 		else
 			++it;
 	}
+}
+void dae::ResourceManager::LoadSound(const sound_id id, const std::string& file)
+{
+	const auto path = GetAudioPath(file);
+	ServiceLocator::GetSoundSystem().LoadSound(id, path);
+}
+
+std::string dae::ResourceManager::GetAudioPath(const std::string& file) const
+{
+	return (m_dataPath / "Audio" / file).string();
 }
