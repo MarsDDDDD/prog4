@@ -3,7 +3,10 @@
 #include <vector>
 #include <memory>
 #include "GameObject.h"
-
+#include "Scene.h"
+#include "TransformComponent.h"
+#include "Direction.h"
+    
 namespace dae
 {
     enum class BlockType
