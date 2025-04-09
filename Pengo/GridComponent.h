@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseComponent.h"
 #include <glm.hpp>
+#include "Direction.h"
 
 namespace dae
 {
@@ -13,6 +14,11 @@ namespace dae
         // Grid position
         void SetGridPosition(int x, int y);
         glm::ivec2 GetGridPosition() const { return m_GridPosition; }
+
+        // Movement
+        void StartMove(Direction direction);
+        void Update(float deltaTime) override;
+        bool IsMoving() const { return m_IsMoving; }
 
         // Convert between grid and world coordinates
         glm::vec2 GridToWorld(int gridX, int gridY) const;
@@ -31,5 +37,11 @@ namespace dae
         int m_GridHeight;
         float m_CellSize;
         glm::ivec2 m_GridPosition{ 0, 0 };
+        glm::ivec2 m_GridDestination{ 0, 0 };
+        float m_MoveTimer{ 0.0f };
+		// seconds needed to move from one cell to another
+        float m_MoveTime{ 0.5f };
+        bool m_IsMoving{ false };
+        Direction m_CurrentDirection{};
     };
 }
