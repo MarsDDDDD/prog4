@@ -8,7 +8,7 @@ namespace dae
     class GridComponent : public BaseComponent
     {
     public:
-        GridComponent(GameObject* pOwner, int gridWidth, int gridHeight, float cellSize);
+        GridComponent(GameObject* pOwner, int gridWidth, int gridHeight, float cellSize, float offsetX = 0.0f, float offsetY = 0.0f);
         ~GridComponent() override = default;
 
         // Grid position
@@ -31,11 +31,16 @@ namespace dae
 
         // Update the GameObject's position based on grid position
         void UpdateWorldPosition();
+        
+        // Offsets
+        void SetOffsets(float offsetX, float offsetY);
 
     private:
         int m_GridWidth;
         int m_GridHeight;
         float m_CellSize;
+        float m_OffsetX{0.0f};
+        float m_OffsetY{0.0f};
         glm::ivec2 m_GridPosition{ 0, 0 };
         glm::ivec2 m_GridDestination{ 0, 0 };
         float m_MoveTimer{ 0.0f };

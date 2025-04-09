@@ -1,12 +1,13 @@
-// GridComponent.cpp
 #include "GridComponent.h"
 #include "GameObject.h"
 
-dae::GridComponent::GridComponent(GameObject* pOwner, int gridWidth, int gridHeight, float cellSize)
+dae::GridComponent::GridComponent(GameObject* pOwner, int gridWidth, int gridHeight, float cellSize, float offsetX, float offsetY)
     : BaseComponent(pOwner)
     , m_GridWidth(gridWidth)
     , m_GridHeight(gridHeight)
     , m_CellSize(cellSize)
+    , m_OffsetX(offsetX)
+    , m_OffsetY(offsetY)
 	, m_GridPosition(0, 0)
 	, m_GridDestination(0, 0)
 	, m_MoveTimer(0.0f)
@@ -94,15 +95,18 @@ void dae::GridComponent::Update(float deltaTime)
 
 glm::vec2 dae::GridComponent::GridToWorld(int gridX, int gridY) const
 {
-    // Calculate the world position at the center of the grid cell
-    return { gridX * m_CellSize + m_CellSize / 2, gridY * m_CellSize + m_CellSize / 2 };
+    // Calculate the world position at the center of the grid cell with offset
+    return { 
+        gridX * m_CellSize + m_CellSize / 2 + m_OffsetX, 
+        gridY * m_CellSize + m_CellSize / 2 + m_OffsetY 
+    };
 }
 
 glm::ivec2 dae::GridComponent::WorldToGrid(float worldX, float worldY) const
 {
-    // Convert world coordinates to grid coordinates
-    int gridX = static_cast<int>(worldX / m_CellSize);
-    int gridY = static_cast<int>(worldY / m_CellSize);
+    // Convert world coordinates to grid coordinates, accounting for offset
+    int gridX = static_cast<int>((worldX - m_OffsetX) / m_CellSize);
+    int gridY = static_cast<int>((worldY - m_OffsetY) / m_CellSize);
 
     // Clamp to grid bounds
     gridX = std::max(0, std::min(gridX, m_GridWidth - 1));
@@ -121,4 +125,11 @@ void dae::GridComponent::UpdateWorldPosition()
         // Update GameObject position
         m_pGameObject->SetLocalPosition(worldPos.x, worldPos.y);
     }
+}
+
+void dae::GridComponent::SetOffsets(float offsetX, float offsetY)
+{
+    m_OffsetX = offsetX;
+    m_OffsetY = offsetY;
+    UpdateWorldPosition();
 }
