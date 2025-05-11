@@ -185,6 +185,7 @@ xcopy "$(ProjectDir)..\3rdParty\SDL2_mixer-2.8.1\lib\x64\*.dll" "$(OutDir)" /R /
     <ClCompile Include="GridMoveCommand.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="HudObserver.cpp" />
+    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MoveCommand.cpp" />
     <ClCompile Include="NewGridComponent.cpp" />
@@ -197,6 +198,7 @@ xcopy "$(ProjectDir)..\3rdParty\SDL2_mixer-2.8.1\lib\x64\*.dll" "$(OutDir)" /R /
     <ClInclude Include="GridMoveCommand.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HudObserver.h" />
+    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="MoveCommand.h" />
     <ClInclude Include="NewGridComponent.h" />
     <ClInclude Include="PengoGame.h" />

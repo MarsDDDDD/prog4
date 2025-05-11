@@ -40,6 +40,9 @@
     <ClCompile Include="GridEntityComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LevelLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HudObserver.h" />
@@ -52,5 +55,6 @@
     <ClInclude Include="ScoreComponent.h" />
     <ClInclude Include="NewGridComponent.h" />
     <ClInclude Include="GridEntityComponent.h" />
+    <ClInclude Include="LevelLoader.h" />
   </ItemGroup>
 </Project>
