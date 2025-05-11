@@ -27,14 +27,14 @@ static_assert(__cplusplus >= 202002L, "C++20 required");
 #include "InputManager.h"
 #include "HudObserver.h"
 #include "Event.h"
-#include "GridComponent.h"
+#include "GridEntityComponent.h"
+#include "NewGridComponent.h"
 #include "GridMoveCommand.h"
 #include "DebugEventCommand.h"
 
 #include "ServiceLocator.h"
 #include "LoggingSoundSystem.h"
 #include "SDLSoundSystem.h"
-
 
 namespace fs = std::filesystem;
 using namespace dae;
@@ -59,14 +59,21 @@ void load()
     auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
     auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 24);
 
-    // Add grid background
+    // Add grid background and grid object
     auto gridBackgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("bgref.png");
-    auto gridBackground = std::make_unique<dae::GameObject>();
-    gridBackground->SetLocalPosition(gridOffsetX, gridOffsetY);
+    auto gridGameObject = std::make_unique<dae::GameObject>();
+    gridGameObject->SetLocalPosition(gridOffsetX, gridOffsetY);
 
-    auto gridBackgroundTextureComponent = std::make_unique<dae::TextureComponent>(gridBackground.get(), gridBackgroundTexture);
-    gridBackground->AddComponent(std::move(gridBackgroundTextureComponent));
-    scene.Add(std::move(gridBackground));
+    auto gridBackgroundTextureComponent = std::make_unique<dae::TextureComponent>(gridGameObject.get(), gridBackgroundTexture);
+    gridGameObject->AddComponent(std::move(gridBackgroundTextureComponent));
+    
+    // Add the NewGridComponent to our grid game object
+    auto newGridComponent = std::make_unique<NewGridComponent>(gridGameObject.get(), gridWidth, gridHeight, cellSize, cellSize * 0.5f, cellSize * 0.5f);
+    auto* pGridComponent = newGridComponent.get();
+    gridGameObject->AddComponent(std::move(newGridComponent));
+    
+    GameObject* pGridGameObject = gridGameObject.get();
+    scene.Add(std::move(gridGameObject));
     
     // Add char1
     auto char1Texture = dae::ResourceManager::GetInstance().LoadTexture("char1.png");
@@ -75,36 +82,38 @@ void load()
     auto char1TextureComponent = std::make_unique<dae::TextureComponent>(char1.get(), char1Texture);
     char1->AddComponent(std::move(char1TextureComponent));
 
-    // Add grid component to char1 with offset for centering
-    auto char1GridComponent = std::make_unique<GridComponent>(char1.get(), gridWidth, gridHeight, cellSize, gridOffsetX, gridOffsetY);
-    // Set initial grid position
-    char1GridComponent->SetGridPosition(4, 6);
-    char1->AddComponent(std::move(char1GridComponent));
+    // Add GridEntityComponent to char1
+    auto char1GridEntityComponent = std::make_unique<GridEntityComponent>(char1.get());
+    char1->AddComponent(std::move(char1GridEntityComponent));
 
     // Add health component
     auto char1HealthComponent = std::make_unique<HealthComponent>(char1.get());
     char1->AddComponent(std::move(char1HealthComponent));
+    
     // Add score component
     auto char1ScoreComponent = std::make_unique<ScoreComponent>(char1.get());
     char1->AddComponent(std::move(char1ScoreComponent));
 
-    // Input with GridMoveCommand - changed from OnPress to OnHold
-    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadUp, 0, InputManager::InputType::OnHold, 
-                                                    std::make_unique<GridMoveCommand>(char1.get(), Direction::Up));
-    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadDown, 0, InputManager::InputType::OnHold, 
-                                                    std::make_unique<GridMoveCommand>(char1.get(), Direction::Down));
-    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadLeft, 0, InputManager::InputType::OnHold, 
-                                                    std::make_unique<GridMoveCommand>(char1.get(), Direction::Left));
-    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadRight, 0, InputManager::InputType::OnHold, 
-                                                    std::make_unique<GridMoveCommand>(char1.get(), Direction::Right));
-    // Damage self
-    InputManager::GetInstance().AddKeyboardCommand('u', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(char1.get(), 1, Observer::EventId::HEALTH_UPDATED));
-    // Add score
-    InputManager::GetInstance().AddKeyboardCommand('i', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(char1.get(), 1, Observer::EventId::SCORE_UPDATED));
-    InputManager::GetInstance().AddKeyboardCommand('o', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(char1.get(), 5, Observer::EventId::SCORE_UPDATED));
+    // Register char1 with grid at initial position
+    pGridComponent->RegisterEntity(char1.get(), 4, 6);
     GameObject* pChar1 = char1.get();
-
     scene.Add(std::move(char1));
+
+    // Input with GridMoveCommand for char1
+    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadUp, 0, InputManager::InputType::OnHold, 
+                                                    std::make_unique<GridMoveCommand>(pChar1, pGridGameObject, Direction::Up));
+    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadDown, 0, InputManager::InputType::OnHold, 
+                                                    std::make_unique<GridMoveCommand>(pChar1, pGridGameObject, Direction::Down));
+    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadLeft, 0, InputManager::InputType::OnHold, 
+                                                    std::make_unique<GridMoveCommand>(pChar1, pGridGameObject, Direction::Left));
+    InputManager::GetInstance().AddControllerCommand(XBoxController::XBoxButton::DPadRight, 0, InputManager::InputType::OnHold, 
+                                                    std::make_unique<GridMoveCommand>(pChar1, pGridGameObject, Direction::Right));
+    
+    // Damage self
+    InputManager::GetInstance().AddKeyboardCommand('u', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(pChar1, 1, Observer::EventId::HEALTH_UPDATED));
+    // Add score
+    InputManager::GetInstance().AddKeyboardCommand('i', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(pChar1, 1, Observer::EventId::SCORE_UPDATED));
+    InputManager::GetInstance().AddKeyboardCommand('o', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(pChar1, 5, Observer::EventId::SCORE_UPDATED));
 
     // Add char2
     auto char2Texture = dae::ResourceManager::GetInstance().LoadTexture("char2.png");
@@ -113,36 +122,38 @@ void load()
     auto char2TextureComponent = std::make_unique<dae::TextureComponent>(char2.get(), char2Texture);
     char2->AddComponent(std::move(char2TextureComponent));
 
-    // Add grid component to char2 with offset for centering
-    auto char2GridComponent = std::make_unique<GridComponent>(char2.get(), gridWidth, gridHeight, cellSize, gridOffsetX, gridOffsetY);
-    // Set initial grid position
-    char2GridComponent->SetGridPosition(8, 8);
-    char2->AddComponent(std::move(char2GridComponent));
+    // Add GridEntityComponent to char2
+    auto char2GridEntityComponent = std::make_unique<GridEntityComponent>(char2.get());
+    char2->AddComponent(std::move(char2GridEntityComponent));
 
     // Add health component
     auto healthComponent = std::make_unique<HealthComponent>(char2.get());
     char2->AddComponent(std::move(healthComponent));
+    
     // Add score component
     auto scoreComponent = std::make_unique<ScoreComponent>(char2.get());
     char2->AddComponent(std::move(scoreComponent));
 
-    // Input with GridMoveCommand - changed from OnPress to OnHold
-    InputManager::GetInstance().AddKeyboardCommand('w', InputManager::InputType::OnHold, 
-                                                std::make_unique<GridMoveCommand>(char2.get(), Direction::Up));
-    InputManager::GetInstance().AddKeyboardCommand('s', InputManager::InputType::OnHold, 
-                                                std::make_unique<GridMoveCommand>(char2.get(), Direction::Down));
-    InputManager::GetInstance().AddKeyboardCommand('a', InputManager::InputType::OnHold, 
-                                                std::make_unique<GridMoveCommand>(char2.get(), Direction::Left));
-    InputManager::GetInstance().AddKeyboardCommand('d', InputManager::InputType::OnHold, 
-                                                std::make_unique<GridMoveCommand>(char2.get(), Direction::Right));
-    // Damage self
-    InputManager::GetInstance().AddKeyboardCommand('j', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(char2.get(), 1, Observer::EventId::HEALTH_UPDATED));
-    // Add score
-    InputManager::GetInstance().AddKeyboardCommand('k', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(char2.get(), 1, Observer::EventId::SCORE_UPDATED));
-    InputManager::GetInstance().AddKeyboardCommand('l', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(char2.get(), 5, Observer::EventId::SCORE_UPDATED));
+    // Register char2 with grid at initial position
+    pGridComponent->RegisterEntity(char2.get(), 8, 8);
     GameObject* pChar2 = char2.get();
-
     scene.Add(std::move(char2));
+
+    // Input with GridMoveCommand for char2
+    InputManager::GetInstance().AddKeyboardCommand('w', InputManager::InputType::OnHold, 
+                                                std::make_unique<GridMoveCommand>(pChar2, pGridGameObject, Direction::Up));
+    InputManager::GetInstance().AddKeyboardCommand('s', InputManager::InputType::OnHold, 
+                                                std::make_unique<GridMoveCommand>(pChar2, pGridGameObject, Direction::Down));
+    InputManager::GetInstance().AddKeyboardCommand('a', InputManager::InputType::OnHold, 
+                                                std::make_unique<GridMoveCommand>(pChar2, pGridGameObject, Direction::Left));
+    InputManager::GetInstance().AddKeyboardCommand('d', InputManager::InputType::OnHold, 
+                                                std::make_unique<GridMoveCommand>(pChar2, pGridGameObject, Direction::Right));
+    
+    // Damage self
+    InputManager::GetInstance().AddKeyboardCommand('j', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(pChar2, 1, Observer::EventId::HEALTH_UPDATED));
+    // Add score
+    InputManager::GetInstance().AddKeyboardCommand('k', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(pChar2, 1, Observer::EventId::SCORE_UPDATED));
+    InputManager::GetInstance().AddKeyboardCommand('l', InputManager::InputType::OnPress, std::make_unique<DebugEventCommand>(pChar2, 5, Observer::EventId::SCORE_UPDATED));
 
     // Add title text
     auto titleObject = std::make_unique<dae::GameObject>();

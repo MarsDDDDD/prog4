@@ -1,18 +1,15 @@
 #include "GridMoveCommand.h"
 
-void dae::GridMoveCommand::Execute(float /*deltaTime*/)
+namespace dae
 {
-    if (!m_pGameObject)
-        return;
-        
-    auto gridComponent = m_pGameObject->GetComponent<GridComponent>();
-    if (!gridComponent)
-        return;
-    
-    // Don't start a new move if already moving
-    if (!gridComponent->IsMoving())
+    void GridMoveCommand::Execute(float /*deltaTime*/)
     {
-        // Start movement in the specified direction
-        gridComponent->StartMove(m_Direction);
+        if (!m_Entity || !m_GridObject)
+            return;
+
+        auto gridComponent = m_GridObject->GetComponent<NewGridComponent>();
+        if (gridComponent) {
+            gridComponent->MoveEntity(m_Entity, m_Direction);
+        }
     }
 }

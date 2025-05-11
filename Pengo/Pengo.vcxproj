@@ -181,22 +181,24 @@ xcopy "$(ProjectDir)..\3rdParty\SDL2_mixer-2.8.1\lib\x64\*.dll" "$(OutDir)" /R /
   <ItemGroup>
     <ClCompile Include="DebugEventCommand.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
-    <ClCompile Include="GridComponent.cpp" />
+    <ClCompile Include="GridEntityComponent.cpp" />
     <ClCompile Include="GridMoveCommand.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="HudObserver.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MoveCommand.cpp" />
+    <ClCompile Include="NewGridComponent.cpp" />
     <ClCompile Include="ScoreComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugEventCommand.h" />
     <ClInclude Include="FPSComponent.h" />
-    <ClInclude Include="GridComponent.h" />
+    <ClInclude Include="GridEntityComponent.h" />
     <ClInclude Include="GridMoveCommand.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HudObserver.h" />
     <ClInclude Include="MoveCommand.h" />
+    <ClInclude Include="NewGridComponent.h" />
     <ClInclude Include="PengoGame.h" />
     <ClInclude Include="ScoreComponent.h" />
   </ItemGroup>

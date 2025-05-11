@@ -19,9 +19,6 @@
     <ClCompile Include="FPSComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GridComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GridMoveCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -37,16 +34,23 @@
     <ClCompile Include="ScoreComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NewGridComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GridEntityComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HudObserver.h" />
     <ClInclude Include="DebugEventCommand.h" />
     <ClInclude Include="FPSComponent.h" />
-    <ClInclude Include="GridComponent.h" />
     <ClInclude Include="GridMoveCommand.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="MoveCommand.h" />
     <ClInclude Include="PengoGame.h" />
     <ClInclude Include="ScoreComponent.h" />
+    <ClInclude Include="NewGridComponent.h" />
+    <ClInclude Include="GridEntityComponent.h" />
   </ItemGroup>
 </Project>
